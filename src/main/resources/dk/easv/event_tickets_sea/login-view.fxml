@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.text.Font?>
+
+<VBox alignment="CENTER" prefHeight="520.0" prefWidth="820.0" spacing="20.0" style="-fx-background-color: linear-gradient(to bottom right, #f7f9fc, #eef2f7);" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.easv.event_tickets_sea.gui.LoginController">
+    <children>
+        <VBox spacing="16.0" maxWidth="420.0" style="-fx-background-color: white; -fx-background-radius: 18; -fx-border-radius: 18; -fx-padding: 28 32 28 32;">
+            <effect>
+                <DropShadow blurType="GAUSSIAN" color="#1f2a441a" radius="24.0" spread="0.08" offsetX="0.0" offsetY="6.0" />
+            </effect>
+            <children>
+                <VBox spacing="4.0">
+                    <children>
+                        <Label text="Event Tickets SEA" style="-fx-text-fill: #1b2b4b;">
+                            <font>
+                                <Font name="System Bold" size="26.0" />
+                            </font>
+                        </Label>
+                        <Label text="Sign in to manage events" style="-fx-text-fill: #6b7b93;" />
+                    </children>
+                </VBox>
+
+                <VBox spacing="8.0">
+                    <children>
+                        <Label text="Username" style="-fx-text-fill: #2d3c54;" />
+                        <TextField fx:id="usernameField" promptText="you@example.com" style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: #d5dde8; -fx-padding: 10 12 10 12;" />
+                    </children>
+                </VBox>
+
+                <VBox spacing="8.0">
+                    <children>
+                        <Label text="Password" style="-fx-text-fill: #2d3c54;" />
+                        <PasswordField fx:id="passwordField" promptText="Your password" style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: #d5dde8; -fx-padding: 10 12 10 12;" />
+                    </children>
+                </VBox>
+
+                <HBox alignment="CENTER_RIGHT" spacing="8.0">
+                    <children>
+                        <Label text="Forgot password?" style="-fx-text-fill: #7a8aa3;" />
+                    </children>
+                </HBox>
+
+                <Button fx:id="loginBtn" defaultButton="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleLogin" style="-fx-background-color: #2f6fed; -fx-text-fill: white; -fx-background-radius: 12; -fx-font-size: 14px; -fx-font-weight: 700; -fx-padding: 10 14 10 14;" text="Sign in" />
+            </children>
+        </VBox>
+    </children>
+</VBox>

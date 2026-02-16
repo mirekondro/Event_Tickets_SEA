@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane prefHeight="680.0" prefWidth="1020.0" style="-fx-background-color: #f6f7fb;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.easv.event_tickets_sea.gui.EventsController">
+
+    <top>
+        <VBox spacing="12.0" style="-fx-padding: 16 20 0 20;">
+            <children>
+                <HBox alignment="CENTER_LEFT" spacing="16.0" style="-fx-background-color: white; -fx-background-radius: 16; -fx-padding: 14 18 14 18;">
+                    <effect>
+                        <DropShadow blurType="GAUSSIAN" color="#1f2a4414" radius="18.0" spread="0.06" offsetX="0.0" offsetY="6.0" />
+                    </effect>
+                    <children>
+                        <VBox spacing="2.0">
+                            <children>
+                                <Label text="Event Tickets SEA" style="-fx-text-fill: #1b2b4b;">
+                                    <font>
+                                        <Font name="System Bold" size="18.0" />
+                                    </font>
+                                </Label>
+                                <Label text="Discover and buy tickets fast" style="-fx-text-fill: #6b7b93;" />
+                            </children>
+                        </VBox>
+                        <Separator orientation="VERTICAL" />
+                        <TextField fx:id="searchField" promptText="Search events" style="-fx-background-radius: 12; -fx-border-radius: 12; -fx-border-color: #dbe2ee; -fx-padding: 8 12 8 12;" HBox.hgrow="ALWAYS" />
+                        <Button fx:id="loginBtn" mnemonicParsing="false" onAction="#handleGoToLogin" style="-fx-background-color: #2f6fed; -fx-text-fill: white; -fx-background-radius: 12; -fx-font-weight: 700; -fx-padding: 8 16 8 16;" text="Login" />
+                    </children>
+                </HBox>
+
+                <HBox spacing="16.0" style="-fx-background-color: linear-gradient(to right, #2f6fed, #6b8cff); -fx-background-radius: 18; -fx-padding: 16 18 16 18;">
+                    <children>
+                        <VBox spacing="4.0" HBox.hgrow="ALWAYS">
+                            <children>
+                                <Label text="Find your next experience" style="-fx-text-fill: white;">
+                                    <font>
+                                        <Font name="System Bold" size="16.0" />
+                                    </font>
+                                </Label>
+                                <Label text="Concerts, theatre, conferences, and more" style="-fx-text-fill: #e7ecff;" />
+                            </children>
+                        </VBox>
+                        <HBox spacing="8.0" alignment="CENTER_RIGHT">
+                            <children>
+                                <Label text="This week" style="-fx-text-fill: white; -fx-background-color: #ffffff33; -fx-background-radius: 12; -fx-padding: 6 10 6 10;" />
+                                <Label text="12 events" style="-fx-text-fill: white; -fx-background-color: #ffffff33; -fx-background-radius: 12; -fx-padding: 6 10 6 10;" />
+                            </children>
+                        </HBox>
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+    </top>
+
+    <center>
+        <VBox spacing="16.0" style="-fx-padding: 18 20 20 20;">
+            <children>
+                <HBox spacing="14.0">
+                    <children>
+                        <VBox spacing="6.0" style="-fx-background-color: #eef4ff; -fx-background-radius: 14; -fx-padding: 12 14 12 14;" HBox.hgrow="ALWAYS">
+                            <children>
+                                <Label text="Trending" style="-fx-text-fill: #274b8b;" />
+                                <Label text="Tech Summit" style="-fx-text-fill: #1b2b4b; -fx-font-weight: 700;" />
+                            </children>
+                        </VBox>
+                        <VBox spacing="6.0" style="-fx-background-color: #f2f7f2; -fx-background-radius: 14; -fx-padding: 12 14 12 14;" HBox.hgrow="ALWAYS">
+                            <children>
+                                <Label text="Tickets left" style="-fx-text-fill: #2f6f4a;" />
+                                <Label text="320 available" style="-fx-text-fill: #1b2b4b; -fx-font-weight: 700;" />
+                            </children>
+                        </VBox>
+                        <VBox spacing="6.0" style="-fx-background-color: #fff3e6; -fx-background-radius: 14; -fx-padding: 12 14 12 14;" HBox.hgrow="ALWAYS">
+                            <children>
+                                <Label text="New events" style="-fx-text-fill: #a05a1f;" />
+                                <Label text="8 added" style="-fx-text-fill: #1b2b4b; -fx-font-weight: 700;" />
+                            </children>
+                        </VBox>
+                    </children>
+                </HBox>
+
+                <VBox style="-fx-background-color: white; -fx-background-radius: 16; -fx-padding: 16 16 16 16;">
+                    <effect>
+                        <DropShadow blurType="GAUSSIAN" color="#1f2a4414" radius="16.0" spread="0.05" offsetX="0.0" offsetY="3.0" />
+                    </effect>
+                    <children>
+                        <HBox spacing="8.0" alignment="CENTER_LEFT">
+                            <children>
+                                <Label text="Available events" style="-fx-text-fill: #2d3c54;">
+                                    <font>
+                                        <Font name="System Bold" size="14.0" />
+                                    </font>
+                                </Label>
+                                <Label text="Updated just now" style="-fx-text-fill: #8a98ad; -fx-background-color: #f2f4f8; -fx-background-radius: 10; -fx-padding: 2 8 2 8;" />
+                            </children>
+                        </HBox>
+                        <TableView fx:id="eventsTable" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS">
+                            <columns>
+                                <TableColumn fx:id="colEventName" prefWidth="240.0" text="Event Name" />
+                                <TableColumn fx:id="colLocation" prefWidth="160.0" text="Location" />
+                                <TableColumn fx:id="colDate" prefWidth="140.0" text="Date" />
+                                <TableColumn fx:id="colPrice" prefWidth="120.0" text="Price" />
+                                <TableColumn fx:id="colAvailability" prefWidth="140.0" text="Availability" />
+                            </columns>
+                            <columnResizePolicy>
+                                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                            </columnResizePolicy>
+                        </TableView>
+                    </children>
+                </VBox>
+            </children>
+        </VBox>
+    </center>
+
+    <right>
+        <VBox spacing="14.0" style="-fx-background-color: white; -fx-background-radius: 16; -fx-padding: 18 18 18 18;" BorderPane.alignment="CENTER">
+            <effect>
+                <DropShadow blurType="GAUSSIAN" color="#1f2a4414" radius="16.0" spread="0.05" offsetX="0.0" offsetY="3.0" />
+            </effect>
+            <children>
+                <Label text="Buy tickets" style="-fx-text-fill: #2d3c54;">
+                    <font>
+                        <Font name="System Bold" size="14.0" />
+                    </font>
+                </Label>
+                <Label text="Select an event to continue" style="-fx-text-fill: #6b7b93;" />
+                <Separator prefWidth="200.0" />
+                <Button fx:id="buyTicketBtn" disable="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleBuyTicket" style="-fx-background-color: #2f6fed; -fx-text-fill: white; -fx-background-radius: 10; -fx-font-weight: 700;" text="Buy ticket" />
+                <Button fx:id="viewDetailsBtn" disable="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleViewDetails" style="-fx-background-color: #eef2f7; -fx-text-fill: #2d3c54; -fx-background-radius: 10;" text="View details" />
+            </children>
+        </VBox>
+    </right>
+
+</BorderPane>

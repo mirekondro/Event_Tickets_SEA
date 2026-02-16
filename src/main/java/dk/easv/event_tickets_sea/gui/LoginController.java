@@ -1,34 +1,26 @@
 package dk.easv.event_tickets_sea.gui;
 
 import dk.easv.event_tickets_sea.HelloApplication;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-
 import java.io.IOException;
 
 public class LoginController {
-    @FXML
-    private TextField usernameField;
+    @FXML private TextField usernameField;
 
     @FXML
-    private PasswordField passwordField;
+    private void handleLogin(ActionEvent event) throws IOException {
+        String username = usernameField.getText() != null ? usernameField.getText().toLowerCase() : "";
+        String fxmlFile = username.contains("admin") ? "admin-dashboard.fxml" : "coordinator-dashboard.fxml";
 
-    @FXML
-    private Button loginBtn;
-
-    @FXML
-    private void handleLogin() throws IOException {
-        // Minimal navigation to confirm wiring works.
-        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("coordinator-dashboard.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 900, 600);
-        Stage stage = (Stage) loginBtn.getScene().getWindow();
-        stage.setTitle("Coordinator Dashboard");
-        stage.setScene(scene);
+        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource(fxmlFile));
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.setScene(new Scene(fxmlLoader.load(), 1100, 720));
+        stage.centerOnScreen();
     }
 }
-

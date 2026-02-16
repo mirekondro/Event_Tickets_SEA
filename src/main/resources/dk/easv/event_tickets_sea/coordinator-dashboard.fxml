@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane prefHeight="680.0" prefWidth="1020.0" styleClass="app-background"
+<BorderPane prefHeight="720.0" prefWidth="1100.0" styleClass="app-background"
             stylesheets="@styles.css"
             xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="dk.easv.event_tickets_sea.gui.CoordinatorController">
@@ -22,8 +22,8 @@
             <padding><Insets top="16" right="28" bottom="16" left="28"/></padding>
             <Label text="Coordinator Dashboard" styleClass="header-logo"/>
             <Region HBox.hgrow="ALWAYS" />
-            <TextField fx:id="searchField" promptText="Search events..." styleClass="search-field" prefWidth="250"/>
-            <Button mnemonicParsing="false" styleClass="btn, btn-outline" text="Log out" />
+            <TextField fx:id="searchField" promptText="Search my events..." styleClass="search-field" prefWidth="250"/>
+            <Button mnemonicParsing="false" styleClass="btn, btn-outline" text="Log out" onAction="#handleLogout"/>
         </HBox>
     </top>
 
@@ -33,7 +33,7 @@
             <children>
                 <VBox styleClass="card" VBox.vgrow="ALWAYS" spacing="16">
                     <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
-                    <Label text="Upcoming Events Overview" styleClass="section-title"/>
+                    <Label text="My Managed Events" styleClass="section-title"/>
                     <TableView fx:id="eventsTable" VBox.vgrow="ALWAYS" styleClass="modern-table">
                         <columns>
                             <TableColumn fx:id="colEventName" prefWidth="240.0" text="Event Name" />
@@ -52,20 +52,33 @@
     </center>
 
     <right>
-        <VBox spacing="16.0" styleClass="card" prefWidth="280.0">
+        <VBox spacing="16.0" styleClass="card" prefWidth="300.0">
             <BorderPane.margin><Insets top="28" right="28" bottom="28" left="0"/></BorderPane.margin>
             <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
             <children>
-                <Label text="Quick Actions" styleClass="section-title"/>
+                <Label text="Event Setup" styleClass="section-title"/>
 
-                <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#handleCreateEvent" styleClass="btn, btn-primary, btn-large" text="+ New Event" />
-                <Button fx:id="btnDeleteEvent" disable="true" maxWidth="MAX_VALUE" mnemonicParsing="false" onAction="#handleDeleteEvent" styleClass="btn, btn-danger" text="Delete Event" />
+                <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#handleCreateEvent" styleClass="btn, btn-primary" text="+ New Event" />
+
+                <Button maxWidth="Infinity" mnemonicParsing="false" styleClass="btn, btn-secondary" text="Assign Co-Coordinator" />
+
+                <Button fx:id="btnDeleteEvent" maxWidth="Infinity" mnemonicParsing="false" onAction="#handleDeleteEvent" styleClass="btn, btn-danger" text="Delete Event" />
 
                 <Separator style="-fx-padding: 12 0;" />
 
-                <Label text="Ticket Management" styleClass="field-label" />
-                <Button fx:id="btnManageTickets" disable="true" maxWidth="MAX_VALUE" mnemonicParsing="false" onAction="#handleManageTickets" styleClass="btn, btn-secondary" text="Sell / Print Tickets" />
-                <Button fx:id="btnViewAttendees" disable="true" maxWidth="MAX_VALUE" mnemonicParsing="false" onAction="#handleViewAttendees" styleClass="btn, btn-secondary" text="View Attendees" />
+                <Label text="Tickets &amp; Admission" styleClass="field-label" />
+
+                <Button maxWidth="Infinity" mnemonicParsing="false" styleClass="btn, btn-secondary" text="Manage Categories (VIP...)" />
+
+                <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#handleSpecialVouchers" styleClass="btn, btn-secondary" text="Special Vouchers (Beer/Food)" />
+
+                <Separator style="-fx-padding: 12 0;" />
+
+                <Label text="Sales" styleClass="field-label" />
+
+                <Button fx:id="btnManageTickets" maxWidth="Infinity" mnemonicParsing="false" onAction="#handleManageTickets" styleClass="btn, btn-primary, btn-large" text="Sell / Print Tickets" />
+
+                <Button fx:id="btnViewAttendees" maxWidth="Infinity" mnemonicParsing="false" onAction="#handleViewAttendees" styleClass="btn, btn-outline" text="View Attendees" />
             </children>
         </VBox>
     </right>

@@ -26,7 +26,7 @@
 
                 <VBox spacing="8.0">
                     <Label text="Username" styleClass="field-label" />
-                    <TextField fx:id="usernameField" promptText="you@example.com" styleClass="input-field"/>
+                    <TextField fx:id="usernameField" promptText="admin or coordinator..." styleClass="input-field"/>
                 </VBox>
 
                 <VBox spacing="8.0">

@@ -7,81 +7,65 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="640.0" prefWidth="980.0" style="-fx-background-color: #f5f7fb;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dk.easv.event_tickets_sea.gui.CoordinatorController">
+<BorderPane prefHeight="680.0" prefWidth="1020.0" styleClass="app-background"
+            stylesheets="@styles.css"
+            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="dk.easv.event_tickets_sea.gui.CoordinatorController">
 
     <top>
-        <HBox alignment="CENTER_LEFT" spacing="16.0" style="-fx-background-color: white; -fx-padding: 14 20 14 20;" BorderPane.alignment="CENTER">
-            <effect>
-                <DropShadow blurType="GAUSSIAN" color="#1f2a4414" radius="18.0" spread="0.06" offsetX="0.0" offsetY="4.0" />
-            </effect>
-            <children>
-                <Label text="Coordinator Dashboard" style="-fx-text-fill: #1b2b4b;">
-                    <font>
-                        <Font name="System Bold" size="18.0" />
-                    </font>
-                </Label>
-                <Separator orientation="VERTICAL" />
-                <TextField fx:id="searchField" promptText="Search events" style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: #d5dde8; -fx-padding: 8 12 8 12;" HBox.hgrow="ALWAYS" />
-                <Button mnemonicParsing="false" style="-fx-background-color: #e8eef8; -fx-text-fill: #254b8b; -fx-background-radius: 10; -fx-font-weight: 600;" text="Log out" />
-            </children>
+        <HBox alignment="CENTER_LEFT" spacing="20.0" styleClass="header-bar" BorderPane.alignment="CENTER">
+            <padding><Insets top="16" right="28" bottom="16" left="28"/></padding>
+            <Label text="Coordinator Dashboard" styleClass="header-logo"/>
+            <Region HBox.hgrow="ALWAYS" />
+            <TextField fx:id="searchField" promptText="Search events..." styleClass="search-field" prefWidth="250"/>
+            <Button mnemonicParsing="false" styleClass="btn, btn-outline" text="Log out" />
         </HBox>
     </top>
 
     <center>
-        <VBox spacing="16.0" style="-fx-padding: 20 20 20 20;">
+        <VBox spacing="20.0">
+            <padding><Insets top="28" right="24" bottom="28" left="28"/></padding>
             <children>
-                <VBox style="-fx-background-color: white; -fx-background-radius: 14; -fx-padding: 16 16 16 16;">
-                    <effect>
-                        <DropShadow blurType="GAUSSIAN" color="#1f2a4414" radius="16.0" spread="0.05" offsetX="0.0" offsetY="3.0" />
-                    </effect>
-                    <children>
-                        <Label text="Upcoming events" style="-fx-text-fill: #2d3c54;">
-                            <font>
-                                <Font name="System Bold" size="14.0" />
-                            </font>
-                        </Label>
-                        <TableView fx:id="eventsTable" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS">
-                            <columns>
-                                <TableColumn fx:id="colEventName" prefWidth="220.0" text="Event Name" />
-                                <TableColumn fx:id="colLocation" prefWidth="160.0" text="Location" />
-                                <TableColumn fx:id="colStartDate" prefWidth="150.0" text="Start Date" />
-                                <TableColumn fx:id="colEndDate" prefWidth="150.0" text="End Date" />
-                                <TableColumn fx:id="colNotes" prefWidth="220.0" text="Notes" />
-                            </columns>
-                            <columnResizePolicy>
-                                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-                            </columnResizePolicy>
-                        </TableView>
-                    </children>
+                <VBox styleClass="card" VBox.vgrow="ALWAYS" spacing="16">
+                    <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
+                    <Label text="Upcoming Events Overview" styleClass="section-title"/>
+                    <TableView fx:id="eventsTable" VBox.vgrow="ALWAYS" styleClass="modern-table">
+                        <columns>
+                            <TableColumn fx:id="colEventName" prefWidth="240.0" text="Event Name" />
+                            <TableColumn fx:id="colLocation" prefWidth="160.0" text="Location" />
+                            <TableColumn fx:id="colStartDate" prefWidth="140.0" text="Start Date" />
+                            <TableColumn fx:id="colEndDate" prefWidth="140.0" text="End Date" />
+                            <TableColumn fx:id="colNotes" prefWidth="200.0" text="Notes" />
+                        </columns>
+                        <columnResizePolicy>
+                            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                        </columnResizePolicy>
+                    </TableView>
                 </VBox>
             </children>
         </VBox>
     </center>
 
     <right>
-        <VBox spacing="14.0" style="-fx-background-color: white; -fx-background-radius: 14; -fx-padding: 18 18 18 18;" BorderPane.alignment="CENTER">
-            <effect>
-                <DropShadow blurType="GAUSSIAN" color="#1f2a4414" radius="16.0" spread="0.05" offsetX="0.0" offsetY="3.0" />
-            </effect>
+        <VBox spacing="16.0" styleClass="card" prefWidth="280.0">
+            <BorderPane.margin><Insets top="28" right="28" bottom="28" left="0"/></BorderPane.margin>
+            <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
             <children>
-                <Label text="Actions" style="-fx-text-fill: #2d3c54;">
-                    <font>
-                        <Font name="System Bold" size="14.0" />
-                    </font>
-                </Label>
-                <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleCreateEvent" style="-fx-background-color: #2f6fed; -fx-text-fill: white; -fx-background-radius: 10; -fx-font-weight: 700;" text="+ New Event" />
-                <Button fx:id="btnDeleteEvent" disable="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleDeleteEvent" style="-fx-background-color: #f36a6a; -fx-text-fill: white; -fx-background-radius: 10; -fx-font-weight: 700;" text="Delete Event" />
-                <Separator prefWidth="200.0" />
+                <Label text="Quick Actions" styleClass="section-title"/>
 
-                <Label text="Ticket Management" style="-fx-text-fill: #6b7b93;" />
-                <Button fx:id="btnManageTickets" disable="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleManageTickets" style="-fx-background-color: #eef2f7; -fx-text-fill: #2d3c54; -fx-background-radius: 10;" text="Sell / Print Tickets" />
-                <Button fx:id="btnViewAttendees" disable="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#handleViewAttendees" style="-fx-background-color: #eef2f7; -fx-text-fill: #2d3c54; -fx-background-radius: 10;" text="View Attendees" />
+                <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#handleCreateEvent" styleClass="btn, btn-primary, btn-large" text="+ New Event" />
+                <Button fx:id="btnDeleteEvent" disable="true" maxWidth="MAX_VALUE" mnemonicParsing="false" onAction="#handleDeleteEvent" styleClass="btn, btn-danger" text="Delete Event" />
+
+                <Separator style="-fx-padding: 12 0;" />
+
+                <Label text="Ticket Management" styleClass="field-label" />
+                <Button fx:id="btnManageTickets" disable="true" maxWidth="MAX_VALUE" mnemonicParsing="false" onAction="#handleManageTickets" styleClass="btn, btn-secondary" text="Sell / Print Tickets" />
+                <Button fx:id="btnViewAttendees" disable="true" maxWidth="MAX_VALUE" mnemonicParsing="false" onAction="#handleViewAttendees" styleClass="btn, btn-secondary" text="View Attendees" />
             </children>
         </VBox>
     </right>

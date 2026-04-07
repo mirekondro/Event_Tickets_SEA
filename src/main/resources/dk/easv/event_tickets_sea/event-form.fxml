@@ -23,28 +23,28 @@
 
         <VBox spacing="8.0">
             <Label styleClass="field-label" text="Event Name *" />
-            <TextField promptText="e.g. Dog Show 2026" styleClass="input-field" />
+            <TextField fx:id="eventNameField" promptText="e.g. Dog Show 2026" styleClass="input-field" />
         </VBox>
 
         <HBox spacing="16.0">
             <VBox spacing="8.0" HBox.hgrow="ALWAYS">
                 <Label styleClass="field-label" text="Start Date *" />
-                <DatePicker maxWidth="Infinity" styleClass="input-field" />
+                <DatePicker fx:id="startDatePicker" maxWidth="Infinity" styleClass="input-field" />
             </VBox>
             <VBox spacing="8.0" HBox.hgrow="ALWAYS">
                 <Label styleClass="field-label" text="Start Time *" />
-                <TextField promptText="18:00" styleClass="input-field" />
+                <TextField fx:id="startTimeField" promptText="18:00" styleClass="input-field" />
             </VBox>
         </HBox>
 
         <VBox spacing="8.0">
             <Label styleClass="field-label" text="Location (Address, URL, Coordinates) *" />
-            <TextField promptText="Where is it happening?" styleClass="input-field" />
+            <TextField fx:id="locationField" promptText="Where is it happening?" styleClass="input-field" />
         </VBox>
 
         <VBox spacing="8.0">
             <Label styleClass="field-label" text="Notes *" />
-            <TextArea prefRowCount="3" promptText="Extra information about the event..." styleClass="input-field" />
+            <TextArea fx:id="notesArea" prefRowCount="3" promptText="Extra information about the event..." styleClass="input-field" />
         </VBox>
     </VBox>
 
@@ -55,22 +55,22 @@
         <HBox spacing="16.0">
             <VBox spacing="8.0" HBox.hgrow="ALWAYS">
                 <Label styleClass="field-label" text="End Date" />
-                <DatePicker maxWidth="Infinity" styleClass="input-field" />
+                <DatePicker fx:id="endDatePicker" maxWidth="Infinity" styleClass="input-field" />
             </VBox>
             <VBox spacing="8.0" HBox.hgrow="ALWAYS">
                 <Label styleClass="field-label" text="End Time" />
-                <TextField promptText="22:00" styleClass="input-field" />
+                <TextField fx:id="endTimeField" promptText="22:00" styleClass="input-field" />
             </VBox>
         </HBox>
 
         <VBox spacing="8.0">
             <Label styleClass="field-label" text="Location Guidance" />
-            <TextArea prefRowCount="2" promptText="How to get there (e.g., By car, park behind the building...)" styleClass="input-field" />
+            <TextArea fx:id="locationGuidanceArea" prefRowCount="2" promptText="How to get there (e.g., By car, park behind the building...)" styleClass="input-field" />
         </VBox>
     </VBox>
 
     <HBox spacing="12.0" alignment="CENTER_RIGHT">
         <Button styleClass="btn, btn-outline" text="Cancel" onAction="#handleClose"/>
-        <Button styleClass="btn, btn-primary" text="Save Event" onAction="#handleClose"/>
+        <Button styleClass="btn, btn-primary" text="Save Event" onAction="#handleSaveEvent"/>
     </HBox>
 </VBox>

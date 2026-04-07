@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox prefWidth="500.0" spacing="20.0" styleClass="app-background" stylesheets="@styles.css"
+      xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="dk.easv.event_tickets_sea.gui.AddUserController">
+    <padding><Insets bottom="32" left="32" right="32" top="32" /></padding>
+
+    <VBox spacing="4.0">
+        <Label styleClass="title-label" text="Add New User" />
+        <Label styleClass="subtitle-label" text="Create a new coordinator account for event management." />
+    </VBox>
+
+    <VBox spacing="16.0" styleClass="card">
+        <padding><Insets bottom="20" left="20" right="20" top="20" /></padding>
+        <Label styleClass="section-title" text="Account Information" />
+
+        <VBox spacing="8.0">
+            <Label styleClass="field-label" text="Full Name *" />
+            <TextField fx:id="fullNameField" promptText="e.g., John Doe" styleClass="input-field" />
+        </VBox>
+
+        <VBox spacing="8.0">
+            <Label styleClass="field-label" text="Email *" />
+            <TextField fx:id="emailField" promptText="e.g., john.doe@easv.dk" styleClass="input-field" />
+        </VBox>
+
+        <VBox spacing="8.0">
+            <Label styleClass="field-label" text="Username *" />
+            <TextField fx:id="usernameField" promptText="e.g., johndoe" styleClass="input-field" />
+        </VBox>
+
+        <VBox spacing="8.0">
+            <Label styleClass="field-label" text="Password *" />
+            <PasswordField fx:id="passwordField" promptText="••••••••" styleClass="input-field" />
+        </VBox>
+
+        <VBox spacing="8.0">
+            <Label styleClass="field-label" text="Confirm Password *" />
+            <PasswordField fx:id="confirmPasswordField" promptText="••••••••" styleClass="input-field" />
+        </VBox>
+
+        <VBox spacing="8.0">
+            <Label styleClass="field-label" text="Role *" />
+            <ComboBox fx:id="roleComboBox" maxWidth="Infinity" promptText="Select role" styleClass="input-field" />
+        </VBox>
+    </VBox>
+
+    <VBox spacing="12.0" styleClass="card" style="-fx-background-color: #EFF6FF;">
+        <padding><Insets bottom="16" left="20" right="20" top="16" /></padding>
+        <Label styleClass="field-label" text="ℹ️ Important Notes:" style="-fx-text-fill: #1E40AF;" />
+        <Label styleClass="subtitle-label" text="• Event Coordinators can create and manage events" wrapText="true" />
+        <Label styleClass="subtitle-label" text="• Admins can manage users and delete any event" wrapText="true" />
+        <Label styleClass="subtitle-label" text="• Users will receive login credentials via email" wrapText="true" />
+    </VBox>
+
+    <HBox spacing="12.0" alignment="CENTER_RIGHT">
+        <Button styleClass="btn, btn-outline" text="Cancel" onAction="#handleCancel"/>
+        <Button fx:id="createButton" styleClass="btn, btn-primary" text="Create User" onAction="#handleCreateUser"/>
+    </HBox>
+</VBox>

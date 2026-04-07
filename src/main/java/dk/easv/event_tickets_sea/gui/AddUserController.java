@@ -1,5 +1,7 @@
 package dk.easv.event_tickets_sea.gui;
 
+import dk.easv.event_tickets_sea.model.User;
+import dk.easv.event_tickets_sea.util.UserManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -44,8 +46,11 @@ public class AddUserController {
         String password = passwordField.getText();
         String role = roleComboBox.getValue();
 
-        // TODO: Add user to database
-        // For now, just show success message
+        // Create new user and add to UserManager
+        User newUser = new User(username, role, email, fullName);
+        UserManager.getInstance().addUser(newUser);
+
+        // Show success message
         showAlert(Alert.AlertType.INFORMATION, "Success",
                 "User Created",
                 "User '" + fullName + "' has been created successfully!");

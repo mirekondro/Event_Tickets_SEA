@@ -4,5 +4,8 @@ module dk.easv.event_tickets_sea {
 
     opens dk.easv.event_tickets_sea to javafx.fxml;
     opens dk.easv.event_tickets_sea.gui to javafx.fxml;
+    opens dk.easv.event_tickets_sea.model to javafx.base;
     exports dk.easv.event_tickets_sea;
+    exports dk.easv.event_tickets_sea.model;
+    exports dk.easv.event_tickets_sea.util;
 }

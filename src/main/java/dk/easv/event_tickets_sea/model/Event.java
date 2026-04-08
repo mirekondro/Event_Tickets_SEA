@@ -1,5 +1,7 @@
 package dk.easv.event_tickets_sea.model;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -13,6 +15,7 @@ public class Event {
     private String locationGuidance;
     private String notes;
     private String coordinator;
+    private ObservableList<String> coCoordinators;
 
     public Event(String eventName, LocalDate startDate, LocalTime startTime,
                  LocalDate endDate, LocalTime endTime, String location,
@@ -26,6 +29,7 @@ public class Event {
         this.locationGuidance = locationGuidance;
         this.notes = notes;
         this.coordinator = coordinator;
+        this.coCoordinators = FXCollections.observableArrayList();
     }
 
     // Getters and Setters
@@ -101,6 +105,20 @@ public class Event {
         this.coordinator = coordinator;
     }
 
+    public ObservableList<String> getCoCoordinators() {
+        return coCoordinators;
+    }
+
+    public void addCoCoordinator(String coCoordinator) {
+        if (!coCoordinators.contains(coCoordinator) && !coCoordinator.equals(coordinator)) {
+            coCoordinators.add(coCoordinator);
+        }
+    }
+
+    public void removeCoCoordinator(String coCoordinator) {
+        coCoordinators.remove(coCoordinator);
+    }
+
     // Helper method for display
     public String getStartDateTimeFormatted() {
         if (startDate != null && startTime != null) {
@@ -114,5 +132,12 @@ public class Event {
             return endDate.toString() + " " + endTime.toString();
         }
         return endDate != null ? endDate.toString() : "";
+    }
+
+    public String getCoCoordinatorsFormatted() {
+        if (coCoordinators.isEmpty()) {
+            return "None";
+        }
+        return String.join(", ", coCoordinators);
     }
 }

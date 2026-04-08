@@ -60,7 +60,7 @@
 
                 <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#handleCreateEvent" styleClass="btn, btn-primary" text="+ New Event" />
 
-                <Button maxWidth="Infinity" mnemonicParsing="false" styleClass="btn, btn-secondary" text="Assign Co-Coordinator" />
+                <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#handleAssignCoCoordinator" styleClass="btn, btn-secondary" text="Assign Co-Coordinator" />
 
                 <Button fx:id="btnDeleteEvent" maxWidth="Infinity" mnemonicParsing="false" onAction="#handleDeleteEvent" styleClass="btn, btn-danger" text="Delete Event" />
 

@@ -8,6 +8,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -60,13 +61,36 @@ public class CoordinatorController {
         openModal("voucher-print-view.fxml", "Special Voucher");
     }
 
+    @FXML
+    private void handleAssignCoCoordinator() throws IOException {
+        Event selectedEvent = eventsTable.getSelectionModel().getSelectedItem();
+        if (selectedEvent != null) {
+            // Open add co-coordinator dialog
+            FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("add-co-coordinator-form.fxml"));
+            Stage stage = new Stage();
+            stage.setScene(new Scene(fxmlLoader.load()));
+            stage.setTitle("Assign Co-Coordinator");
+            stage.initModality(Modality.APPLICATION_MODAL);
+
+            // Pass the selected event to the controller
+            AddCoCoordinatorController controller = fxmlLoader.getController();
+            controller.setEvent(selectedEvent);
+
+            stage.showAndWait();
+        } else {
+            showAlert(Alert.AlertType.WARNING, "No Selection",
+                    "No Event Selected",
+                    "Please select an event to assign a co-coordinator.");
+        }
+    }
+
     private void openModal(String fxmlFile, String title) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource(fxmlFile));
         Stage stage = new Stage();
         stage.setScene(new Scene(fxmlLoader.load()));
         stage.setTitle(title);
         stage.initModality(Modality.APPLICATION_MODAL);
-        stage.showAndWait(); // Changed to showAndWait so table refreshes after closing
+        stage.showAndWait();
     }
 
     @FXML
@@ -80,5 +104,13 @@ public class CoordinatorController {
     @FXML
     private void handleViewAttendees() {
         // TODO: Implement view attendees
+    }
+
+    private void showAlert(Alert.AlertType type, String title, String header, String content) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 }

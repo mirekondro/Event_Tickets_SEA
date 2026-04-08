@@ -47,16 +47,16 @@
                 <padding><Insets bottom="24" left="24" right="24" top="24" /></padding>
                 <Label styleClass="section-title" text="Global Events Overview" />
                 <Label styleClass="subtitle-label" text="Assign coordinators or delete inappropriate events." />
-                <TableView styleClass="modern-table" VBox.vgrow="ALWAYS">
+                <TableView fx:id="eventsTable" styleClass="modern-table" VBox.vgrow="ALWAYS">
                     <columns>
-                        <TableColumn prefWidth="180.0" text="Event Name" />
-                        <TableColumn prefWidth="150.0" text="Coordinator" />
+                        <TableColumn fx:id="colEventName" prefWidth="180.0" text="Event Name" />
+                        <TableColumn fx:id="colCoordinator" prefWidth="150.0" text="Coordinator" />
                     </columns>
                     <columnResizePolicy><TableView fx:constant="CONSTRAINED_RESIZE_POLICY" /></columnResizePolicy>
                 </TableView>
                 <HBox spacing="12.0">
-                    <Button maxWidth="Infinity" styleClass="btn, btn-secondary" text="Assign Coordinator" HBox.hgrow="ALWAYS" />
-                    <Button maxWidth="Infinity" styleClass="btn, btn-danger" text="Delete Event" HBox.hgrow="ALWAYS" />
+                    <Button maxWidth="Infinity" styleClass="btn, btn-secondary" text="Assign Coordinator" onAction="#handleAssignCoordinator" HBox.hgrow="ALWAYS" />
+                    <Button maxWidth="Infinity" styleClass="btn, btn-danger" text="Delete Event" onAction="#handleDeleteEvent" HBox.hgrow="ALWAYS" />
                 </HBox>
             </VBox>
         </HBox>

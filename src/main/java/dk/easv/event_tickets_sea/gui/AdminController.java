@@ -62,7 +62,7 @@ public class AdminController {
         stage.setScene(new Scene(fxmlLoader.load()));
         stage.setTitle("Add New User");
         stage.initModality(Modality.APPLICATION_MODAL);
-        stage.showAndWait(); // Changed to showAndWait so table refreshes after closing
+        stage.showAndWait();
     }
 
     @FXML
@@ -81,13 +81,24 @@ public class AdminController {
     }
 
     @FXML
-    private void handleAssignCoordinator() {
+    private void handleAssignCoordinator() throws IOException {
         Event selectedEvent = eventsTable.getSelectionModel().getSelectedItem();
         if (selectedEvent != null) {
-            // TODO: Open dialog to assign coordinator
-            showAlert(Alert.AlertType.INFORMATION, "Feature Coming Soon",
-                    "Assign Coordinator",
-                    "This feature will allow you to assign coordinators to events.");
+            // Open assign coordinator dialog
+            FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("assign-coordinator-form.fxml"));
+            Stage stage = new Stage();
+            stage.setScene(new Scene(fxmlLoader.load()));
+            stage.setTitle("Assign Coordinator");
+            stage.initModality(Modality.APPLICATION_MODAL);
+
+            // Pass the selected event to the controller
+            AssignCoordinatorController controller = fxmlLoader.getController();
+            controller.setEvent(selectedEvent);
+
+            stage.showAndWait();
+
+            // Refresh the table to show updated coordinator
+            eventsTable.refresh();
         } else {
             showAlert(Alert.AlertType.WARNING, "No Selection",
                     "No Event Selected",

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox prefWidth="450.0" spacing="20.0" styleClass="app-background" stylesheets="@styles.css"
+      xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="dk.easv.event_tickets_sea.gui.AssignCoordinatorController">
+    <padding><Insets bottom="32" left="32" right="32" top="32" /></padding>
+
+    <VBox spacing="4.0">
+        <Label styleClass="title-label" text="Assign Coordinator" />
+        <Label styleClass="subtitle-label" text="Select a coordinator to manage this event." />
+    </VBox>
+
+    <VBox spacing="16.0" styleClass="card">
+        <padding><Insets bottom="20" left="20" right="20" top="20" /></padding>
+        <Label styleClass="section-title" text="Event Information" />
+
+        <VBox spacing="8.0">
+            <Label styleClass="field-label" text="Event Name:" />
+            <Label fx:id="eventNameLabel" styleClass="subtitle-label" text="[Event Name]" style="-fx-font-size: 16px; -fx-font-weight: bold;" />
+        </VBox>
+
+        <VBox spacing="8.0">
+            <Label styleClass="field-label" text="Current Coordinator:" />
+            <Label fx:id="currentCoordinatorLabel" styleClass="subtitle-label" text="[Current Coordinator]" />
+        </VBox>
+    </VBox>
+
+    <VBox spacing="16.0" styleClass="card">
+        <padding><Insets bottom="20" left="20" right="20" top="20" /></padding>
+        <Label styleClass="section-title" text="Select New Coordinator" />
+
+        <VBox spacing="8.0">
+            <Label styleClass="field-label" text="Coordinator *" />
+            <ComboBox fx:id="coordinatorComboBox" maxWidth="Infinity" promptText="Select a coordinator" styleClass="input-field" />
+        </VBox>
+
+        <VBox spacing="12.0" styleClass="card" style="-fx-background-color: #EFF6FF;">
+            <padding><Insets bottom="16" left="20" right="20" top="16" /></padding>
+            <Label styleClass="field-label" text="ℹ️ Note:" style="-fx-text-fill: #1E40AF;" />
+            <Label styleClass="subtitle-label" text="Only Event Coordinators can be assigned to manage events." wrapText="true" />
+        </VBox>
+    </VBox>
+
+    <HBox spacing="12.0" alignment="CENTER_RIGHT">
+        <Button styleClass="btn, btn-outline" text="Cancel" onAction="#handleCancel"/>
+        <Button fx:id="assignButton" styleClass="btn, btn-primary" text="Assign Coordinator" onAction="#handleAssign"/>
+    </HBox>
+</VBox>

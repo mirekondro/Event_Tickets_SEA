@@ -21,28 +21,22 @@
             <children>
                 <VBox spacing="8.0" alignment="CENTER">
                     <Label text="Event Tickets SEA" styleClass="title-label"/>
-                    <Label text="Přihlášení do systému" styleClass="subtitle-label"/>
+                    <Label text="System login" styleClass="subtitle-label"/>
                 </VBox>
 
                 <VBox spacing="8.0">
-                    <Label text="Uživatelské jméno" styleClass="field-label" />
-                    <TextField fx:id="usernameField" promptText="admin nebo coordinator" styleClass="input-field"/>
+                    <Label text="Username" styleClass="field-label" />
+                    <TextField fx:id="usernameField" promptText="Admin/Coordinator" styleClass="input-field"/>
                 </VBox>
 
                 <VBox spacing="8.0">
-                    <Label text="Heslo" styleClass="field-label" />
+                    <Label text="Password" styleClass="field-label" />
                     <PasswordField fx:id="passwordField" promptText="••••••••" styleClass="input-field"/>
-                </VBox>
-
-                <VBox spacing="12.0" styleClass="card" style="-fx-background-color: #EFF6FF; -fx-padding: 12;">
-                    <Label styleClass="field-label" text="ℹ️ Testovací přihlašovací údaje:" style="-fx-text-fill: #1E40AF;" />
-                    <Label styleClass="subtitle-label" text="• Admin: username = admin, password = admin123" />
-                    <Label styleClass="subtitle-label" text="• Coordinator: username = coordinator, password = coordinator123" />
                 </VBox>
 
                 <Button fx:id="loginBtn" defaultButton="true" maxWidth="Infinity"
                         mnemonicParsing="false" onAction="#handleLogin"
-                        styleClass="btn, btn-primary, btn-large" text="Přihlásit se" />
+                        styleClass="btn, btn-primary, btn-large" text="Login" />
             </children>
         </VBox>
     </children>

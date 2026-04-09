@@ -1,0 +1,6 @@
+Server=localhost
+Database=event_ticket_system_sea
+User=CS2025b_e_22
+Password=CS2025bE22#23
+Port=1433
+

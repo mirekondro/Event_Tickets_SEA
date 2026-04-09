@@ -2,6 +2,7 @@ package dk.easv.event_tickets_sea.gui;
 
 import dk.easv.event_tickets_sea.model.Event;
 import dk.easv.event_tickets_sea.util.EventManager;
+import dk.easv.event_tickets_sea.util.UserManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -40,13 +41,16 @@ public class EventFormController {
             LocalDate startDate = startDatePicker.getValue();
             LocalTime startTime = parseTime(startTimeField.getText().trim());
             LocalDate endDate = endDatePicker.getValue();
-            LocalTime endTime = endTimeField.getText().trim().isEmpty() ? null : parseTime(endTimeField.getText().trim());
+            LocalTime endTime = endTimeField.getText().trim().isEmpty() ? LocalTime.of(23, 59) : parseTime(endTimeField.getText().trim());
             String location = locationField.getText().trim();
             String locationGuidance = locationGuidanceArea.getText().trim();
             String notes = notesArea.getText().trim();
 
-            // Create new event and add to EventManager
-            Event newEvent = new Event(
+            // Get coordinator from logged-in user
+            String coordinatorUsername = UserManager.getInstance().getLoggedInUser().getUsername();
+
+            // Add event to database
+            boolean success = EventManager.getInstance().addEvent(
                     eventName,
                     startDate,
                     startTime,
@@ -55,23 +59,27 @@ public class EventFormController {
                     location,
                     locationGuidance,
                     notes,
-                    "Current User" // TODO: Get from logged-in user
+                    coordinatorUsername
             );
 
-            EventManager.getInstance().addEvent(newEvent);
+            if (success) {
+                // Show success message
+                showAlert(Alert.AlertType.INFORMATION, "Success",
+                        "Event Created",
+                        "Event '" + eventName + "' has been created successfully!");
 
-            // Show success message
-            showAlert(Alert.AlertType.INFORMATION, "Success",
-                    "Event Created",
-                    "Event '" + eventName + "' has been created successfully!");
-
-            // Close the window
-            handleClose(event);
+                // Close the window
+                handleClose(event);
+            } else {
+                showAlert(Alert.AlertType.ERROR, "Error",
+                        "Database Error",
+                        "Failed to create event in database.");
+            }
 
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Error",
                     "Invalid Input",
-                    "Please check your time format (HH:MM)");
+                    "Please check your time format (HH:MM): " + e.getMessage());
         }
     }
 

@@ -21,7 +21,7 @@ public class AddUserController {
     @FXML
     public void initialize() {
         // Populate ComboBox with roles
-        roleComboBox.getItems().addAll("Event Coordinator", "Admin");
+        roleComboBox.getItems().addAll("coordinator", "admin");
         // Set default role
         roleComboBox.getSelectionModel().selectFirst();
     }
@@ -46,18 +46,23 @@ public class AddUserController {
         String password = passwordField.getText();
         String role = roleComboBox.getValue();
 
-        // Create new user and add to UserManager
-        User newUser = new User(username, role, email, fullName);
-        UserManager.getInstance().addUser(newUser);
+        // Create new user in database
+        boolean success = UserManager.getInstance().addUser(username, password, email, fullName, role);
 
-        // Show success message
-        showAlert(Alert.AlertType.INFORMATION, "Success",
-                "User Created",
-                "User '" + fullName + "' has been created successfully!");
+        if (success) {
+            // Show success message
+            showAlert(Alert.AlertType.INFORMATION, "Success",
+                    "User Created",
+                    "User '" + fullName + "' has been created successfully!");
 
-        // Close the window
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        stage.close();
+            // Close the window
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.close();
+        } else {
+            showAlert(Alert.AlertType.ERROR, "Error",
+                    "Database Error",
+                    "Failed to create user. Username might already exist.");
+        }
     }
 
     private boolean validateFields() {

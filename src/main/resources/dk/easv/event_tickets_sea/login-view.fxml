@@ -3,7 +3,6 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
@@ -21,26 +20,21 @@
             <children>
                 <VBox spacing="8.0" alignment="CENTER">
                     <Label text="Event Tickets SEA" styleClass="title-label"/>
-                    <Label text="Sign in to manage events" styleClass="subtitle-label"/>
+                    <Label text="Přihlášení do systému" styleClass="subtitle-label"/>
                 </VBox>
 
                 <VBox spacing="8.0">
-                    <Label text="Username" styleClass="field-label" />
-                    <TextField fx:id="usernameField" promptText="admin or coordinator..." styleClass="input-field"/>
-                </VBox>
-
-                <VBox spacing="8.0">
-                    <Label text="Password" styleClass="field-label" />
-                    <PasswordField fx:id="passwordField" promptText="••••••••" styleClass="input-field"/>
+                    <Label text="Uživatelské jméno" styleClass="field-label" />
+                    <TextField fx:id="usernameField" promptText="zadej: admin nebo coordinator..." styleClass="input-field"/>
                 </VBox>
 
                 <HBox alignment="CENTER_RIGHT">
-                    <Label text="Forgot password?" styleClass="link-label" />
+                    <Label text="Zadej 'admin' pro admin panel" styleClass="link-label" />
                 </HBox>
 
                 <Button fx:id="loginBtn" defaultButton="true" maxWidth="Infinity"
                         mnemonicParsing="false" onAction="#handleLogin"
-                        styleClass="btn, btn-primary, btn-large" text="Sign in" />
+                        styleClass="btn, btn-primary, btn-large" text="Přihlásit se" />
             </children>
         </VBox>
     </children>

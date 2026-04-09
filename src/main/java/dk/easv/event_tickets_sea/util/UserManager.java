@@ -1,20 +1,16 @@
 package dk.easv.event_tickets_sea.util;
 
+import dk.easv.event_tickets_sea.db.UserDAO;
 import dk.easv.event_tickets_sea.model.User;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 public class UserManager {
     private static UserManager instance;
-    private ObservableList<User> users;
+    private final UserDAO userDAO;
+    private User loggedInUser;
 
     private UserManager() {
-        users = FXCollections.observableArrayList();
-
-        // Add some sample users
-        users.add(new User("johndoe", "Event Coordinator", "john@easv.dk", "John Doe"));
-        users.add(new User("janesmith", "Event Coordinator", "jane@easv.dk", "Jane Smith"));
-        users.add(new User("admin", "Admin", "admin@easv.dk", "Admin User"));
+        this.userDAO = UserDAO.getInstance();
     }
 
     public static UserManager getInstance() {
@@ -24,15 +20,64 @@ public class UserManager {
         return instance;
     }
 
+    /**
+     * Ověří přihlášení uživatele
+     */
+    public boolean login(String username, String password) {
+        User user = userDAO.verifyLogin(username, password);
+        if (user != null) {
+            this.loggedInUser = user;
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Vrátí aktuálně přihlášeného uživatele
+     */
+    public User getLoggedInUser() {
+        return loggedInUser;
+    }
+
+    /**
+     * Nastaví přihlášeného uživatele
+     */
+    public void setLoggedInUser(User user) {
+        this.loggedInUser = user;
+    }
+
+    /**
+     * Odhlásí uživatele
+     */
+    public void logout() {
+        this.loggedInUser = null;
+    }
+
+    /**
+     * Získá všechny uživatele z databáze
+     */
     public ObservableList<User> getUsers() {
-        return users;
+        return userDAO.getAllUsers();
     }
 
-    public void addUser(User user) {
-        users.add(user);
+    /**
+     * Přidá nového uživatele
+     */
+    public boolean addUser(String username, String password, String email, String fullName, String role) {
+        return userDAO.addUser(username, password, email, fullName, role);
     }
 
+    /**
+     * Odstraní uživatele
+     */
     public void removeUser(User user) {
-        users.remove(user);
+        userDAO.deleteUser(user.getUsername());
+    }
+
+    /**
+     * Získá všechny koordinátory
+     */
+    public ObservableList<User> getCoordinators() {
+        return userDAO.getCoordinators();
     }
 }

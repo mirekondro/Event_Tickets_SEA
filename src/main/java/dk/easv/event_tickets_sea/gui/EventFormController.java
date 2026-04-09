@@ -40,8 +40,25 @@ public class EventFormController {
             String eventName = eventNameField.getText().trim();
             LocalDate startDate = startDatePicker.getValue();
             LocalTime startTime = parseTime(startTimeField.getText().trim());
+
+            // OPTIONAL: End Date and End Time
             LocalDate endDate = endDatePicker.getValue();
-            LocalTime endTime = endTimeField.getText().trim().isEmpty() ? LocalTime.of(23, 59) : parseTime(endTimeField.getText().trim());
+            LocalTime endTime = null;
+
+            // If End Date is empty, use Start Date
+            if (endDate == null) {
+                endDate = startDate;
+                System.out.println("End Date not specified, using Start Date: " + startDate);
+            }
+
+            // If End Time is empty, use Start Time + 3 hours
+            if (endTimeField.getText().trim().isEmpty()) {
+                endTime = startTime.plusHours(3);
+                System.out.println("End Time not specified, using Start Time + 3 hours: " + endTime);
+            } else {
+                endTime = parseTime(endTimeField.getText().trim());
+            }
+
             String location = locationField.getText().trim();
             String locationGuidance = locationGuidanceArea.getText().trim();
             String notes = notesArea.getText().trim();
@@ -73,13 +90,14 @@ public class EventFormController {
             } else {
                 showAlert(Alert.AlertType.ERROR, "Error",
                         "Database Error",
-                        "Failed to create event in database.");
+                        "Failed to create event in database. Check console for details.");
             }
 
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Error",
                     "Invalid Input",
                     "Please check your time format (HH:MM): " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -98,7 +116,7 @@ public class EventFormController {
 
         if (startTimeField.getText().trim().isEmpty()) {
             showAlert(Alert.AlertType.ERROR, "Validation Error",
-                    "Missing Information", "Please enter a start time.");
+                    "Missing Information", "Please enter a start time (e.g., 18:00).");
             return false;
         }
 
@@ -114,6 +132,28 @@ public class EventFormController {
             return false;
         }
 
+        // Validate start time format
+        try {
+            parseTime(startTimeField.getText().trim());
+        } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "Validation Error",
+                    "Invalid Time Format",
+                    "Start time must be in format HH:MM (e.g., 18:00).");
+            return false;
+        }
+
+        // Validate end time format (only if provided)
+        if (!endTimeField.getText().trim().isEmpty()) {
+            try {
+                parseTime(endTimeField.getText().trim());
+            } catch (Exception e) {
+                showAlert(Alert.AlertType.ERROR, "Validation Error",
+                        "Invalid Time Format",
+                        "End time must be in format HH:MM (e.g., 22:00).");
+                return false;
+            }
+        }
+
         return true;
     }
 
@@ -121,10 +161,18 @@ public class EventFormController {
         // Parse time in format HH:MM
         String[] parts = timeStr.split(":");
         if (parts.length != 2) {
-            throw new IllegalArgumentException("Invalid time format");
+            throw new IllegalArgumentException("Invalid time format. Use HH:MM (e.g., 18:00)");
         }
         int hour = Integer.parseInt(parts[0].trim());
         int minute = Integer.parseInt(parts[1].trim());
+
+        if (hour < 0 || hour > 23) {
+            throw new IllegalArgumentException("Hour must be between 0 and 23");
+        }
+        if (minute < 0 || minute > 59) {
+            throw new IllegalArgumentException("Minute must be between 0 and 59");
+        }
+
         return LocalTime.of(hour, minute);
     }
 

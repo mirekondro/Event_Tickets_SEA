@@ -29,8 +29,7 @@ public class AdminController {
         colRole.setCellValueFactory(new PropertyValueFactory<>("role"));
         colEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
 
-        // Load users into table
-        usersTable.setItems(UserManager.getInstance().getUsers());
+        reloadUsersTable();
     }
 
     @FXML
@@ -48,6 +47,14 @@ public class AdminController {
         stage.setScene(new Scene(fxmlLoader.load()));
         stage.setTitle("Add New User");
         stage.initModality(Modality.APPLICATION_MODAL);
-        stage.showAndWait(); // Changed to showAndWait so table refreshes after closing
+        stage.showAndWait();
+
+        // Re-fetch users from DB so newly created records appear immediately.
+        reloadUsersTable();
+    }
+
+    private void reloadUsersTable() {
+        usersTable.setItems(UserManager.getInstance().getUsers());
+        usersTable.refresh();
     }
 }

@@ -34,8 +34,7 @@ public class CoordinatorController {
         colEndDate.setCellValueFactory(new PropertyValueFactory<>("endDateTimeFormatted"));
         colNotes.setCellValueFactory(new PropertyValueFactory<>("notes"));
 
-        // Load events into table
-        eventsTable.setItems(EventManager.getInstance().getEvents());
+        reloadEventsTable();
     }
 
     @FXML
@@ -49,6 +48,7 @@ public class CoordinatorController {
     @FXML
     private void handleCreateEvent() throws IOException {
         openModal("event-form.fxml", "Create New Event");
+        reloadEventsTable();
     }
 
     @FXML
@@ -98,7 +98,13 @@ public class CoordinatorController {
         Event selectedEvent = eventsTable.getSelectionModel().getSelectedItem();
         if (selectedEvent != null) {
             EventManager.getInstance().removeEvent(selectedEvent);
+            reloadEventsTable();
         }
+    }
+
+    private void reloadEventsTable() {
+        eventsTable.setItems(EventManager.getInstance().getEvents());
+        eventsTable.refresh();
     }
 
     @FXML

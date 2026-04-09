@@ -3,6 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
@@ -25,12 +26,19 @@
 
                 <VBox spacing="8.0">
                     <Label text="Uživatelské jméno" styleClass="field-label" />
-                    <TextField fx:id="usernameField" promptText="zadej: admin nebo coordinator..." styleClass="input-field"/>
+                    <TextField fx:id="usernameField" promptText="admin nebo coordinator" styleClass="input-field"/>
                 </VBox>
 
-                <HBox alignment="CENTER_RIGHT">
-                    <Label text="Zadej 'admin' pro admin panel" styleClass="link-label" />
-                </HBox>
+                <VBox spacing="8.0">
+                    <Label text="Heslo" styleClass="field-label" />
+                    <PasswordField fx:id="passwordField" promptText="••••••••" styleClass="input-field"/>
+                </VBox>
+
+                <VBox spacing="12.0" styleClass="card" style="-fx-background-color: #EFF6FF; -fx-padding: 12;">
+                    <Label styleClass="field-label" text="ℹ️ Testovací přihlašovací údaje:" style="-fx-text-fill: #1E40AF;" />
+                    <Label styleClass="subtitle-label" text="• Admin: username = admin, password = admin123" />
+                    <Label styleClass="subtitle-label" text="• Coordinator: username = coordinator, password = coordinator123" />
+                </VBox>
 
                 <Button fx:id="loginBtn" defaultButton="true" maxWidth="Infinity"
                         mnemonicParsing="false" onAction="#handleLogin"

@@ -53,7 +53,24 @@ public class CoordinatorController {
 
     @FXML
     private void handleManageTickets() throws IOException {
-        openModal("sell-ticket.fxml", "Sell / Print Tickets");
+        Event selectedEvent = eventsTable.getSelectionModel().getSelectedItem();
+        if (selectedEvent == null) {
+            showAlert(Alert.AlertType.WARNING, "No Selection",
+                    "No Event Selected",
+                    "Please select an event before selling/printing tickets.");
+            return;
+        }
+
+        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("sell-ticket.fxml"));
+        Stage stage = new Stage();
+        stage.setScene(new Scene(fxmlLoader.load()));
+        stage.setTitle("Sell / Print Tickets");
+        stage.initModality(Modality.APPLICATION_MODAL);
+
+        SellTicketController controller = fxmlLoader.getController();
+        controller.setEvent(selectedEvent);
+
+        stage.showAndWait();
     }
 
     @FXML

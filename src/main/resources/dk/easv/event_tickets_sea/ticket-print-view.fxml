@@ -9,7 +9,7 @@
 
 <VBox alignment="CENTER" prefHeight="480.0" prefWidth="800.0" styleClass="app-background" stylesheets="@styles.css"
       xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="dk.easv.event_tickets_sea.gui.PopupController">
+      fx:controller="dk.easv.event_tickets_sea.gui.TicketPrintController">
 
     <Label text="Ticket Preview (Ready for Print / PDF)" styleClass="subtitle-label" style="-fx-padding: 0 0 20 0;" />
 
@@ -17,37 +17,39 @@
 
         <VBox spacing="16.0" styleClass="ticket-main" HBox.hgrow="ALWAYS">
             <VBox spacing="4.0">
-                <Label text="VIP ADMISSION" styleClass="badge, badge-filled" style="-fx-background-color: #FEF08A; -fx-text-fill: #854D0E;" />
-                <Label text="EASV Summer Party 2026" styleClass="ticket-event-title" />
+                <Label fx:id="categoryLabel" text="REGULAR ADMISSION" styleClass="badge, badge-filled" style="-fx-background-color: #FEF08A; -fx-text-fill: #854D0E;" />
+                <Label fx:id="eventNameLabel" text="Event" styleClass="ticket-event-title" />
             </VBox>
 
             <HBox spacing="40.0">
                 <VBox spacing="4.0">
                     <Label text="START" styleClass="field-label" />
-                    <Label text="24. 08. 2026 - 18:00" styleClass="subtitle-label" />
+                    <Label fx:id="startDateTimeLabel" text="-" styleClass="subtitle-label" />
                 </VBox>
                 <VBox spacing="4.0">
                     <Label text="END (Optional)" styleClass="field-label" />
-                    <Label text="25. 08. 2026 - 02:00" styleClass="subtitle-label" />
+                    <Label fx:id="endDateTimeLabel" text="-" styleClass="subtitle-label" />
                 </VBox>
             </HBox>
 
             <VBox spacing="4.0">
                 <Label text="LOCATION" styleClass="field-label" />
-                <Label text="Spangsbjerg Kirkevej 103, 6700 Esbjerg" styleClass="subtitle-label" />
-                <Label text="Guidance: Enter through the main parking lot." styleClass="subtitle-label" style="-fx-font-style: italic;" />
+                <Label fx:id="locationLabel" text="-" styleClass="subtitle-label" />
+                <Label fx:id="guidanceLabel" text="Guidance: -" styleClass="subtitle-label" style="-fx-font-style: italic;" />
             </VBox>
 
             <VBox spacing="4.0">
                 <Label text="NOTES" styleClass="field-label" />
-                <Label text="Dress code: Casual. Bring good mood!" styleClass="subtitle-label" />
+                <Label fx:id="notesLabel" text="-" styleClass="subtitle-label" />
             </VBox>
         </VBox>
 
         <VBox spacing="16.0" alignment="CENTER" styleClass="ticket-stub" prefWidth="240.0">
             <VBox alignment="CENTER" spacing="2.0">
-                <Label text="John Doe" styleClass="section-title" />
-                <Label text="john.doe@example.com" styleClass="subtitle-label" />
+                <Label fx:id="customerNameLabel" text="Customer" styleClass="section-title" />
+                <Label fx:id="customerEmailLabel" text="email@example.com" styleClass="subtitle-label" />
+                <Label fx:id="quantityLabel" text="Qty: 1" styleClass="subtitle-label" />
+                <Label fx:id="issuedByLabel" text="Issued by: -" styleClass="subtitle-label" />
             </VBox>
 
             <Region VBox.vgrow="ALWAYS" />
@@ -60,7 +62,7 @@
                 <Label text="|| | |||| | ||| | ||" style="-fx-font-weight: bold; -fx-letter-spacing: 2px;" />
             </VBox>
 
-            <Label text="ID: 550e8400-e29b-41d4-a716-446655440000" styleClass="uuid-text" />
+            <Label fx:id="ticketIdLabel" text="ID: -" styleClass="uuid-text" />
         </VBox>
     </HBox>
 

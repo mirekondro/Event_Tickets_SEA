@@ -220,4 +220,27 @@ public class EventDAO {
         }
         return false;
     }
+
+    /**
+     * Přiřadí hlavního koordinátora k akci dle username
+     */
+    public boolean assignCoordinator(String eventName, String coordinatorUsername) {
+        String query = "UPDATE e SET e.CoordinatorId = u.UserId " +
+                "FROM Events e " +
+                "INNER JOIN Users u ON u.Username = ? AND u.IsActive = 1 " +
+                "WHERE e.EventName = ? AND e.IsActive = 1";
+
+        try (Connection conn = dbConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setString(1, coordinatorUsername);
+            stmt.setString(2, eventName);
+
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("Assign coordinator error: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return false;
+    }
 }

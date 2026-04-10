@@ -59,4 +59,11 @@ public class EventManager {
                               String locationGuidance, String notes) {
         return eventDAO.updateEvent(eventName, startDate, startTime, endDate, endTime, location, locationGuidance, notes);
     }
+
+    /**
+     * Přiřadí hlavního koordinátora akci
+     */
+    public boolean assignCoordinator(String eventName, String coordinatorUsername) {
+        return EventDAO.getInstance().assignCoordinator(eventName, coordinatorUsername);
+    }
 }

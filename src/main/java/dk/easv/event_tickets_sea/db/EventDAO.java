@@ -27,13 +27,13 @@ public class EventDAO {
     }
 
     /**
-     * Přidá novou akci
+     * Přidá novou akci (EndDate a EndTime můžou být NULL)
      */
     public boolean addEvent(String eventName, LocalDate startDate, LocalTime startTime,
-                           LocalDate endDate, LocalTime endTime, String location,
-                           String locationGuidance, String notes, String coordinatorUsername) {
+                            LocalDate endDate, LocalTime endTime, String location,
+                            String locationGuidance, String notes, String coordinatorUsername) {
         String query = "INSERT INTO Events (EventName, StartDate, StartTime, EndDate, EndTime, Location, LocationGuidance, Notes, CoordinatorId) " +
-                       "SELECT ?, ?, ?, ?, ?, ?, ?, ?, u.UserId FROM Users u WHERE u.Username = ? AND u.IsActive = 1";
+                "SELECT ?, ?, ?, ?, ?, ?, ?, ?, u.UserId FROM Users u WHERE u.Username = ? AND u.IsActive = 1";
 
         try (Connection conn = dbConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -41,8 +41,20 @@ public class EventDAO {
             stmt.setString(1, eventName);
             stmt.setDate(2, java.sql.Date.valueOf(startDate));
             stmt.setTime(3, java.sql.Time.valueOf(startTime));
-            stmt.setDate(4, java.sql.Date.valueOf(endDate));
-            stmt.setTime(5, java.sql.Time.valueOf(endTime));
+
+            // Handle NULL for EndDate and EndTime
+            if (endDate != null) {
+                stmt.setDate(4, java.sql.Date.valueOf(endDate));
+            } else {
+                stmt.setNull(4, Types.DATE);
+            }
+
+            if (endTime != null) {
+                stmt.setTime(5, java.sql.Time.valueOf(endTime));
+            } else {
+                stmt.setNull(5, Types.TIME);
+            }
+
             stmt.setString(6, location);
             stmt.setString(7, locationGuidance);
             stmt.setString(8, notes);
@@ -67,22 +79,29 @@ public class EventDAO {
     public ObservableList<Event> getAllEvents() {
         ObservableList<Event> events = FXCollections.observableArrayList();
         String query = "SELECT e.EventName, e.StartDate, e.StartTime, e.EndDate, e.EndTime, e.Location, e.LocationGuidance, e.Notes, u.FullName " +
-                       "FROM Events e " +
-                       "LEFT JOIN Users u ON e.CoordinatorId = u.UserId " +
-                       "WHERE e.IsActive = 1 " +
-                       "ORDER BY e.StartDate";
+                "FROM Events e " +
+                "LEFT JOIN Users u ON e.CoordinatorId = u.UserId " +
+                "WHERE e.IsActive = 1 " +
+                "ORDER BY e.StartDate";
 
         try (Connection conn = dbConnection.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(query)) {
 
             while (rs.next()) {
+                // Handle NULL EndDate and EndTime
+                Date endDateSql = rs.getDate("EndDate");
+                Time endTimeSql = rs.getTime("EndTime");
+
+                LocalDate endDate = (endDateSql != null) ? endDateSql.toLocalDate() : null;
+                LocalTime endTime = (endTimeSql != null) ? endTimeSql.toLocalTime() : null;
+
                 Event event = new Event(
                         rs.getString("EventName"),
                         rs.getDate("StartDate").toLocalDate(),
                         rs.getTime("StartTime").toLocalTime(),
-                        rs.getDate("EndDate").toLocalDate(),
-                        rs.getTime("EndTime").toLocalTime(),
+                        endDate,  // Can be NULL
+                        endTime,  // Can be NULL
                         rs.getString("Location"),
                         rs.getString("LocationGuidance"),
                         rs.getString("Notes"),
@@ -103,10 +122,10 @@ public class EventDAO {
     public ObservableList<Event> getEventsByCoordinator(String coordinatorUsername) {
         ObservableList<Event> events = FXCollections.observableArrayList();
         String query = "SELECT e.EventName, e.StartDate, e.StartTime, e.EndDate, e.EndTime, e.Location, e.LocationGuidance, e.Notes, u.FullName " +
-                       "FROM Events e " +
-                       "LEFT JOIN Users u ON e.CoordinatorId = u.UserId " +
-                       "WHERE e.CoordinatorId = (SELECT UserId FROM Users WHERE Username = ?) AND e.IsActive = 1 " +
-                       "ORDER BY e.StartDate";
+                "FROM Events e " +
+                "LEFT JOIN Users u ON e.CoordinatorId = u.UserId " +
+                "WHERE e.CoordinatorId = (SELECT UserId FROM Users WHERE Username = ?) AND e.IsActive = 1 " +
+                "ORDER BY e.StartDate";
 
         try (Connection conn = dbConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -115,12 +134,19 @@ public class EventDAO {
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
+                // Handle NULL EndDate and EndTime
+                Date endDateSql = rs.getDate("EndDate");
+                Time endTimeSql = rs.getTime("EndTime");
+
+                LocalDate endDate = (endDateSql != null) ? endDateSql.toLocalDate() : null;
+                LocalTime endTime = (endTimeSql != null) ? endTimeSql.toLocalTime() : null;
+
                 Event event = new Event(
                         rs.getString("EventName"),
                         rs.getDate("StartDate").toLocalDate(),
                         rs.getTime("StartTime").toLocalTime(),
-                        rs.getDate("EndDate").toLocalDate(),
-                        rs.getTime("EndTime").toLocalTime(),
+                        endDate,  // Can be NULL
+                        endTime,  // Can be NULL
                         rs.getString("Location"),
                         rs.getString("LocationGuidance"),
                         rs.getString("Notes"),
@@ -155,11 +181,11 @@ public class EventDAO {
     }
 
     /**
-     * Aktualizuje akci
+     * Aktualizuje akci (EndDate a EndTime můžou být NULL)
      */
     public boolean updateEvent(String eventName, LocalDate startDate, LocalTime startTime,
-                              LocalDate endDate, LocalTime endTime, String location,
-                              String locationGuidance, String notes) {
+                               LocalDate endDate, LocalTime endTime, String location,
+                               String locationGuidance, String notes) {
         String query = "UPDATE Events SET StartDate = ?, StartTime = ?, EndDate = ?, EndTime = ?, Location = ?, LocationGuidance = ?, Notes = ? WHERE EventName = ?";
 
         try (Connection conn = dbConnection.getConnection();
@@ -167,8 +193,20 @@ public class EventDAO {
 
             stmt.setDate(1, java.sql.Date.valueOf(startDate));
             stmt.setTime(2, java.sql.Time.valueOf(startTime));
-            stmt.setDate(3, java.sql.Date.valueOf(endDate));
-            stmt.setTime(4, java.sql.Time.valueOf(endTime));
+
+            // Handle NULL for EndDate and EndTime
+            if (endDate != null) {
+                stmt.setDate(3, java.sql.Date.valueOf(endDate));
+            } else {
+                stmt.setNull(3, Types.DATE);
+            }
+
+            if (endTime != null) {
+                stmt.setTime(4, java.sql.Time.valueOf(endTime));
+            } else {
+                stmt.setNull(4, Types.TIME);
+            }
+
             stmt.setString(5, location);
             stmt.setString(6, locationGuidance);
             stmt.setString(7, notes);

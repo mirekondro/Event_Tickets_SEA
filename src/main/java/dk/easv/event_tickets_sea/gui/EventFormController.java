@@ -41,21 +41,12 @@ public class EventFormController {
             LocalDate startDate = startDatePicker.getValue();
             LocalTime startTime = parseTime(startTimeField.getText().trim());
 
-            // OPTIONAL: End Date and End Time
-            LocalDate endDate = endDatePicker.getValue();
+            // OPTIONAL: End Date and End Time - can be NULL!
+            LocalDate endDate = endDatePicker.getValue(); // NULL if not selected
             LocalTime endTime = null;
 
-            // If End Date is empty, use Start Date
-            if (endDate == null) {
-                endDate = startDate;
-                System.out.println("End Date not specified, using Start Date: " + startDate);
-            }
-
-            // If End Time is empty, use Start Time + 3 hours
-            if (endTimeField.getText().trim().isEmpty()) {
-                endTime = startTime.plusHours(3);
-                System.out.println("End Time not specified, using Start Time + 3 hours: " + endTime);
-            } else {
+            // Parse End Time only if provided
+            if (!endTimeField.getText().trim().isEmpty()) {
                 endTime = parseTime(endTimeField.getText().trim());
             }
 
@@ -66,13 +57,17 @@ public class EventFormController {
             // Get coordinator from logged-in user
             String coordinatorUsername = UserManager.getInstance().getLoggedInUser().getUsername();
 
+            System.out.println("Creating event:");
+            System.out.println("  Start: " + startDate + " " + startTime);
+            System.out.println("  End: " + (endDate != null ? endDate : "NULL") + " " + (endTime != null ? endTime : "NULL"));
+
             // Add event to database
             boolean success = EventManager.getInstance().addEvent(
                     eventName,
                     startDate,
                     startTime,
-                    endDate,
-                    endTime,
+                    endDate,      // Can be NULL
+                    endTime,      // Can be NULL
                     location,
                     locationGuidance,
                     notes,
@@ -96,7 +91,7 @@ public class EventFormController {
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Error",
                     "Invalid Input",
-                    "Please check your time format (HH:MM): " + e.getMessage());
+                    "Error: " + e.getMessage());
             e.printStackTrace();
         }
     }

@@ -9,8 +9,8 @@ public class Event {
     private String eventName;
     private LocalDate startDate;
     private LocalTime startTime;
-    private LocalDate endDate;
-    private LocalTime endTime;
+    private LocalDate endDate;      // Can be NULL
+    private LocalTime endTime;      // Can be NULL
     private String location;
     private String locationGuidance;
     private String notes;
@@ -23,8 +23,8 @@ public class Event {
         this.eventName = eventName;
         this.startDate = startDate;
         this.startTime = startTime;
-        this.endDate = endDate;
-        this.endTime = endTime;
+        this.endDate = endDate;     // Can be NULL
+        this.endTime = endTime;     // Can be NULL
         this.location = location;
         this.locationGuidance = locationGuidance;
         this.notes = notes;
@@ -119,19 +119,27 @@ public class Event {
         coCoordinators.remove(coCoordinator);
     }
 
-    // Helper method for display
+    // Helper method for display - handles NULL values
     public String getStartDateTimeFormatted() {
         if (startDate != null && startTime != null) {
             return startDate.toString() + " " + startTime.toString();
         }
-        return startDate != null ? startDate.toString() : "";
+        if (startDate != null) {
+            return startDate.toString();
+        }
+        return "";
     }
 
+    // Helper method for display - handles NULL values
     public String getEndDateTimeFormatted() {
         if (endDate != null && endTime != null) {
             return endDate.toString() + " " + endTime.toString();
         }
-        return endDate != null ? endDate.toString() : "";
+        if (endDate != null) {
+            return endDate.toString();
+        }
+        // If end date is NULL, return empty or "N/A"
+        return "—";  // Em dash to show it's optional/not set
     }
 
     public String getCoCoordinatorsFormatted() {

@@ -1,8 +1,7 @@
 package dk.easv.event_tickets_sea.gui;
 
-import dk.easv.event_tickets_sea.HelloApplication;
-
 import dk.easv.event_tickets_sea.model.Category;
+import dk.easv.event_tickets_sea.model.Event;
 import dk.easv.event_tickets_sea.util.CategoryManager;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -15,13 +14,14 @@ import javafx.stage.Stage;
 
 public class ManageCategoriesController {
 
+    @FXML private Label selectedEventLabel;
     @FXML private TextField categoryNameField;
-    @FXML private TextField descriptionField;
     @FXML private TableView<Category> categoriesTable;
     @FXML private TableColumn<Category, String> colCategoryName;
     @FXML private TableColumn<Category, String> colDescription;
 
     private final ObservableList<Category> categoriesData = FXCollections.observableArrayList();
+    private Event selectedEvent;
 
     @FXML
     public void initialize() {
@@ -37,18 +37,21 @@ public class ManageCategoriesController {
     @FXML
     private void handleAddCategory(ActionEvent event) {
         String categoryName = categoryNameField.getText().trim();
-        String description = descriptionField.getText().trim();
 
         if (categoryName.isEmpty()) {
             showAlert(Alert.AlertType.ERROR, "Validation Error", "Missing Name", "Please enter a category name.");
             return;
         }
 
-        boolean success = CategoryManager.getInstance().addCategory(categoryName, description);
+        if (selectedEvent == null) {
+            showAlert(Alert.AlertType.ERROR, "Missing Event", "No Event Selected", "Please open category management from a selected event.");
+            return;
+        }
+
+        boolean success = CategoryManager.getInstance().addCategory(selectedEvent.getEventName(), categoryName);
         if (success) {
             showAlert(Alert.AlertType.INFORMATION, "Success", "Category Added", "Category '" + categoryName + "' has been added.");
             categoryNameField.clear();
-            descriptionField.clear();
             reloadCategories();
         } else {
             showAlert(Alert.AlertType.ERROR, "Database Error", "Failed to Add", "Could not add category to database.");
@@ -63,8 +66,23 @@ public class ManageCategoriesController {
             return;
         }
 
-        categoryNameField.setText(selected.getCategoryName());
-        descriptionField.setText(selected.getDescription());
+        TextInputDialog dialog = new TextInputDialog(selected.getCategoryName());
+        dialog.setTitle("Rename Category");
+        dialog.setHeaderText("Update ticket category name");
+        dialog.setContentText("Category name:");
+
+        dialog.showAndWait().ifPresent(newName -> {
+            String trimmed = newName.trim();
+            if (!trimmed.isEmpty()) {
+                selected.setCategoryName(trimmed);
+                boolean success = CategoryManager.getInstance().updateCategory(selected);
+                if (success) {
+                    reloadCategories();
+                } else {
+                    showAlert(Alert.AlertType.ERROR, "Database Error", "Rename failed", "Could not rename category.");
+                }
+            }
+        });
     }
 
     @FXML
@@ -92,8 +110,18 @@ public class ManageCategoriesController {
     }
 
     private void reloadCategories() {
-        categoriesData.setAll(CategoryManager.getInstance().getCategories());
+        if (selectedEvent == null) {
+            categoriesData.clear();
+        } else {
+            categoriesData.setAll(CategoryManager.getInstance().getCategories(selectedEvent.getEventName()));
+        }
         categoriesTable.refresh();
+    }
+
+    public void setEvent(Event event) {
+        this.selectedEvent = event;
+        selectedEventLabel.setText(event != null ? event.getEventName() : "No event selected");
+        reloadCategories();
     }
 
     private void showAlert(Alert.AlertType type, String title, String header, String content) {

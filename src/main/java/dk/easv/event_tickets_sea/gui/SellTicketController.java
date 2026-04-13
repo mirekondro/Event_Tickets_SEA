@@ -35,11 +35,7 @@ public class SellTicketController {
 
     @FXML
     public void initialize() {
-        // Load categories from database
-        @SuppressWarnings("unchecked")
-        ComboBox<Object> cb = (ComboBox<Object>) (Object) ticketCategoryComboBox;
-        cb.setItems((javafx.collections.ObservableList<Object>) (Object) CategoryManager.getInstance().getCategories());
-        ticketCategoryComboBox.getSelectionModel().selectFirst();
+        // Categories are loaded after event is selected.
         quantitySpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 20, 1));
 
         User loggedInUser = UserManager.getInstance().getLoggedInUser();
@@ -49,6 +45,10 @@ public class SellTicketController {
     public void setEvent(Event event) {
         this.event = event;
         selectedEventLabel.setText(event != null ? event.getEventName() : "No event selected");
+        if (event != null) {
+            ticketCategoryComboBox.setItems(CategoryManager.getInstance().getCategories(event.getEventName()));
+            ticketCategoryComboBox.getSelectionModel().selectFirst();
+        }
     }
 
     @FXML

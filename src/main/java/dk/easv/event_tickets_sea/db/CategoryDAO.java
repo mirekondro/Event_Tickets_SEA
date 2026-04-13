@@ -25,19 +25,19 @@ public class CategoryDAO {
     }
 
     /**
-     * Přidá novou kategorii
+     * Přidá novou kategorii jako nový ticket type pro konkrétní event
      */
-    public boolean addCategory(String categoryName, String description) {
-        String query = "INSERT INTO Categories (CategoryName, Description) VALUES (?, ?)";
+    public boolean addCategory(String eventName, String categoryName) {
+        String query = "INSERT INTO Tickets (EventId, TicketType, Price, QuantityAvailable, QuantitySold, IsActive) " +
+                "SELECT e.EventId, ?, 0, 0, 0, 1 FROM Events e WHERE e.EventName = ? AND e.IsActive = 1";
 
         try (Connection conn = dbConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             stmt.setString(1, categoryName);
-            stmt.setString(2, description != null ? description : "");
+            stmt.setString(2, eventName);
 
-            stmt.executeUpdate();
-            return true;
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             System.err.println("Add category error: " + e.getMessage());
             e.printStackTrace();
@@ -46,21 +46,29 @@ public class CategoryDAO {
     }
 
     /**
-     * Získá všechny kategorie
+     * Získá všechny kategorie (ticket typy) pro konkrétní event
      */
-    public ObservableList<Category> getAllCategories() {
+    public ObservableList<Category> getAllCategories(String eventName) {
         ObservableList<Category> categories = FXCollections.observableArrayList();
-        String query = "SELECT CategoryId, CategoryName, Description FROM Categories WHERE IsActive = 1 ORDER BY CategoryName";
+        String query = "SELECT t.TicketId, t.TicketType, t.Price, t.QuantityAvailable, t.QuantitySold " +
+                "FROM Tickets t " +
+                "JOIN Events e ON e.EventId = t.EventId " +
+                "WHERE e.EventName = ? AND e.IsActive = 1 AND t.IsActive = 1 " +
+                "ORDER BY t.TicketType";
 
         try (Connection conn = dbConnection.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(query)) {
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setString(1, eventName);
+            ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
+                String description = "Price: " + rs.getDouble("Price") +
+                        " | Available: " + (rs.getInt("QuantityAvailable") - rs.getInt("QuantitySold"));
                 Category category = new Category(
-                        rs.getInt("CategoryId"),
-                        rs.getString("CategoryName"),
-                        rs.getString("Description")
+                        rs.getInt("TicketId"),
+                        rs.getString("TicketType"),
+                        description
                 );
                 categories.add(category);
             }
@@ -72,10 +80,10 @@ public class CategoryDAO {
     }
 
     /**
-     * Smaže kategorii (deaktivuje)
+     * Smaže kategorii (deaktivuje ticket type)
      */
     public boolean deleteCategory(int categoryId) {
-        String query = "UPDATE Categories SET IsActive = 0 WHERE CategoryId = ?";
+        String query = "UPDATE Tickets SET IsActive = 0 WHERE TicketId = ?";
 
         try (Connection conn = dbConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -91,17 +99,16 @@ public class CategoryDAO {
     }
 
     /**
-     * Aktualizuje kategorii
+     * Aktualizuje kategorii (ticket type)
      */
-    public boolean updateCategory(int categoryId, String categoryName, String description) {
-        String query = "UPDATE Categories SET CategoryName = ?, Description = ? WHERE CategoryId = ?";
+    public boolean updateCategory(int categoryId, String categoryName) {
+        String query = "UPDATE Tickets SET TicketType = ? WHERE TicketId = ?";
 
         try (Connection conn = dbConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             stmt.setString(1, categoryName);
-            stmt.setString(2, description != null ? description : "");
-            stmt.setInt(3, categoryId);
+            stmt.setInt(2, categoryId);
 
             stmt.executeUpdate();
             return true;

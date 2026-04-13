@@ -22,15 +22,15 @@ public class CategoryManager {
     /**
      * Získá všechny kategorie z databáze
      */
-    public ObservableList<Category> getCategories() {
-        return categoryDAO.getAllCategories();
+    public ObservableList<Category> getCategories(String eventName) {
+        return categoryDAO.getAllCategories(eventName);
     }
 
     /**
      * Přidá novou kategorii
      */
-    public boolean addCategory(String categoryName, String description) {
-        return categoryDAO.addCategory(categoryName, description);
+    public boolean addCategory(String eventName, String categoryName) {
+        return categoryDAO.addCategory(eventName, categoryName);
     }
 
     /**
@@ -44,7 +44,7 @@ public class CategoryManager {
      * Aktualizuje kategorii
      */
     public boolean updateCategory(Category category) {
-        return categoryDAO.updateCategory(category.getCategoryId(), category.getCategoryName(), category.getDescription());
+        return categoryDAO.updateCategory(category.getCategoryId(), category.getCategoryName());
     }
 }
 

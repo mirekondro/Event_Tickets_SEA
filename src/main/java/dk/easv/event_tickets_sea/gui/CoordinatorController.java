@@ -80,7 +80,24 @@ public class CoordinatorController {
 
     @FXML
     private void handleManageCategories() throws IOException {
-        openModal("manage-categories.fxml", "Manage Ticket Categories");
+        Event selectedEvent = eventsTable.getSelectionModel().getSelectedItem();
+        if (selectedEvent == null) {
+            showAlert(Alert.AlertType.WARNING, "No Selection",
+                    "No Event Selected",
+                    "Please select an event before managing categories.");
+            return;
+        }
+
+        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("manage-categories.fxml"));
+        Stage stage = new Stage();
+        stage.setScene(new Scene(fxmlLoader.load()));
+        stage.setTitle("Manage Ticket Categories");
+        stage.initModality(Modality.APPLICATION_MODAL);
+
+        ManageCategoriesController controller = fxmlLoader.getController();
+        controller.setEvent(selectedEvent);
+
+        stage.showAndWait();
     }
 
     @FXML

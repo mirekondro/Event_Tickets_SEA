@@ -17,6 +17,8 @@
     <VBox spacing="4.0">
         <Label styleClass="title-label" text="Manage Ticket Categories" />
         <Label styleClass="subtitle-label" text="Add, edit, or remove ticket categories for your events." />
+        <Label styleClass="field-label" text="Selected Event" />
+        <Label fx:id="selectedEventLabel" styleClass="subtitle-label" text="No event selected" />
     </VBox>
 
     <VBox spacing="16.0" styleClass="card">
@@ -26,11 +28,6 @@
         <VBox spacing="8.0">
             <Label styleClass="field-label" text="Category Name *" />
             <TextField fx:id="categoryNameField" promptText="e.g., VIP, Regular, Student..." styleClass="input-field"/>
-        </VBox>
-
-        <VBox spacing="8.0">
-            <Label styleClass="field-label" text="Description" />
-            <TextField fx:id="descriptionField" promptText="e.g., VIP access with premium benefits..." styleClass="input-field"/>
         </VBox>
 
         <Button maxWidth="Infinity" styleClass="btn, btn-primary" text="Add Category" onAction="#handleAddCategory"/>

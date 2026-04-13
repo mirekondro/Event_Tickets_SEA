@@ -5,6 +5,8 @@ import dk.easv.event_tickets_sea.model.Event;
 import dk.easv.event_tickets_sea.model.User;
 import dk.easv.event_tickets_sea.util.EventManager;
 import dk.easv.event_tickets_sea.util.UserManager;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -12,6 +14,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ChoiceDialog;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -23,6 +26,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class AdminController {
+
+    private final ObservableList<User> usersData = FXCollections.observableArrayList();
+    private final ObservableList<Event> eventsData = FXCollections.observableArrayList();
 
     @FXML private TableView<User> usersTable;
     @FXML private TableColumn<User, String> colUsername;
@@ -42,6 +48,11 @@ public class AdminController {
 
         colEventName.setCellValueFactory(new PropertyValueFactory<>("eventName"));
         colCoordinator.setCellValueFactory(new PropertyValueFactory<>("coordinator"));
+
+        usersTable.setPlaceholder(new Label("No users found."));
+        eventsTable.setPlaceholder(new Label("No events found."));
+        usersTable.setItems(usersData);
+        eventsTable.setItems(eventsData);
 
         reloadUsersTable();
         reloadEventsTable();
@@ -115,12 +126,12 @@ public class AdminController {
     }
 
     private void reloadUsersTable() {
-        usersTable.setItems(UserManager.getInstance().getUsers());
+        usersData.setAll(UserManager.getInstance().getUsers());
         usersTable.refresh();
     }
 
     private void reloadEventsTable() {
-        eventsTable.setItems(EventManager.getInstance().getEvents());
+        eventsData.setAll(EventManager.getInstance().getEvents());
         eventsTable.refresh();
     }
 

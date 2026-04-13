@@ -1,5 +1,6 @@
 package dk.easv.event_tickets_sea.gui;
 
+import dk.easv.event_tickets_sea.HelloApplication;
 import dk.easv.event_tickets_sea.model.Category;
 import dk.easv.event_tickets_sea.model.Event;
 import dk.easv.event_tickets_sea.util.CategoryManager;
@@ -7,10 +8,14 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import java.io.IOException;
 
 public class ManageCategoriesController {
 
@@ -19,88 +24,89 @@ public class ManageCategoriesController {
     @FXML private TableView<Category> categoriesTable;
     @FXML private TableColumn<Category, String> colCategoryName;
     @FXML private TableColumn<Category, String> colDescription;
+    @FXML private TableColumn<Category, String> colPrice;
+    @FXML private TableColumn<Category, Integer> colQuantity;
+    @FXML private Button editButton;
+    @FXML private Button deleteButton;
 
     private final ObservableList<Category> categoriesData = FXCollections.observableArrayList();
     private Event selectedEvent;
+
+    private final CategoryManager categoryManager = CategoryManager.getInstance();
+
+    public void setEvent(Event event) {
+        this.selectedEvent = event;
+        if (event != null) {
+            selectedEventLabel.setText(event.getEventName());
+        }
+        loadData();
+    }
 
     @FXML
     public void initialize() {
         colCategoryName.setCellValueFactory(new PropertyValueFactory<>("categoryName"));
         colDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
+        colPrice.setCellValueFactory(new PropertyValueFactory<>("priceFormatted"));
+        colQuantity.setCellValueFactory(new PropertyValueFactory<>("quantity"));
 
-        categoriesTable.setPlaceholder(new Label("No categories found."));
         categoriesTable.setItems(categoriesData);
 
-        reloadCategories();
+        editButton.setDisable(true);
+        deleteButton.setDisable(true);
+        categoriesTable.getSelectionModel().selectedItemProperty().addListener((obs, old, selected) -> {
+            editButton.setDisable(selected == null);
+            deleteButton.setDisable(selected == null);
+        });
     }
 
-    @FXML
-    private void handleAddCategory(ActionEvent event) {
-        String categoryName = categoryNameField.getText().trim();
-
-        if (categoryName.isEmpty()) {
-            showAlert(Alert.AlertType.ERROR, "Validation Error", "Missing Name", "Please enter a category name.");
-            return;
-        }
-
-        if (selectedEvent == null) {
-            showAlert(Alert.AlertType.ERROR, "Missing Event", "No Event Selected", "Please open category management from a selected event.");
-            return;
-        }
-
-        boolean success = CategoryManager.getInstance().addCategory(selectedEvent.getEventName(), categoryName);
-        if (success) {
-            showAlert(Alert.AlertType.INFORMATION, "Success", "Category Added", "Category '" + categoryName + "' has been added.");
-            categoryNameField.clear();
-            reloadCategories();
-        } else {
-            showAlert(Alert.AlertType.ERROR, "Database Error", "Failed to Add", "Could not add category to database.");
+    private void loadData() {
+        if (selectedEvent != null) {
+            categoriesData.setAll(categoryManager.getCategories(selectedEvent.getEventName()));
         }
     }
 
     @FXML
-    private void handleEditCategory(ActionEvent event) {
+    private void handleAdd() throws IOException {
+        openForm(null);
+    }
+
+    @FXML
+    private void handleEdit() throws IOException {
         Category selected = categoriesTable.getSelectionModel().getSelectedItem();
-        if (selected == null) {
-            showAlert(Alert.AlertType.WARNING, "No Selection", "No Category Selected", "Please select a category to edit.");
-            return;
+        if (selected != null) {
+            openForm(selected);
         }
+    }
 
-        TextInputDialog dialog = new TextInputDialog(selected.getCategoryName());
-        dialog.setTitle("Rename Category");
-        dialog.setHeaderText("Update ticket category name");
-        dialog.setContentText("Category name:");
+    @FXML
+    private void handleDelete() {
+        Category selected = categoriesTable.getSelectionModel().getSelectedItem();
+        if (selected == null) return;
 
-        dialog.showAndWait().ifPresent(newName -> {
-            String trimmed = newName.trim();
-            if (!trimmed.isEmpty()) {
-                selected.setCategoryName(trimmed);
-                boolean success = CategoryManager.getInstance().updateCategory(selected);
-                if (success) {
-                    reloadCategories();
-                } else {
-                    showAlert(Alert.AlertType.ERROR, "Database Error", "Rename failed", "Could not rename category.");
-                }
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Delete Category");
+        confirm.setHeaderText("Delete '" + selected.getCategoryName() + "'?");
+        confirm.setContentText("This action cannot be undone.");
+        confirm.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                categoryManager.removeCategory(selected);
+                loadData();
             }
         });
     }
 
-    @FXML
-    private void handleDeleteCategory(ActionEvent event) {
-        Category selected = categoriesTable.getSelectionModel().getSelectedItem();
-        if (selected == null) {
-            showAlert(Alert.AlertType.WARNING, "No Selection", "No Category Selected", "Please select a category to delete.");
-            return;
-        }
+    private void openForm(Category existing) throws IOException {
+        FXMLLoader loader = new FXMLLoader(HelloApplication.class.getResource("add-category.fxml"));
+        Stage stage = new Stage();
+        stage.setScene(new Scene(loader.load()));
+        stage.setTitle(existing == null ? "Add Category" : "Edit Category");
+        stage.initModality(Modality.APPLICATION_MODAL);
 
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("Delete Category");
-        confirm.setHeaderText("Delete Category?");
-        confirm.setContentText("Are you sure you want to delete '" + selected.getCategoryName() + "'?");
-        if (confirm.showAndWait().orElse(null) == ButtonType.OK) {
-            CategoryManager.getInstance().removeCategory(selected);
-            reloadCategories();
-        }
+        AddCategoryController controller = loader.getController();
+        controller.setCategory(existing, selectedEvent);
+
+        stage.showAndWait();
+        loadData();
     }
 
     @FXML
@@ -108,28 +114,4 @@ public class ManageCategoriesController {
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         stage.close();
     }
-
-    private void reloadCategories() {
-        if (selectedEvent == null) {
-            categoriesData.clear();
-        } else {
-            categoriesData.setAll(CategoryManager.getInstance().getCategories(selectedEvent.getEventName()));
-        }
-        categoriesTable.refresh();
-    }
-
-    public void setEvent(Event event) {
-        this.selectedEvent = event;
-        selectedEventLabel.setText(event != null ? event.getEventName() : "No event selected");
-        reloadCategories();
-    }
-
-    private void showAlert(Alert.AlertType type, String title, String header, String content) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(header);
-        alert.setContentText(content);
-        alert.showAndWait();
-    }
 }
-

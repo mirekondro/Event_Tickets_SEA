@@ -19,32 +19,23 @@ public class CategoryManager {
         return instance;
     }
 
-    /**
-     * Získá všechny kategorie z databáze
-     */
+    /** Get all categories for a specific event */
     public ObservableList<Category> getCategories(String eventName) {
         return categoryDAO.getAllCategories(eventName);
     }
 
-    /**
-     * Přidá novou kategorii
-     */
-    public boolean addCategory(String eventName, String categoryName) {
-        return categoryDAO.addCategory(eventName, categoryName);
+    /** Add a new category with price and quantity */
+    public boolean addCategory(String eventName, String categoryName, String description, double price, int quantity) {
+        return categoryDAO.addCategory(eventName, categoryName, description, price, quantity);
     }
 
-    /**
-     * Odstraní kategorii
-     */
+    /** Update an existing category */
+    public boolean updateCategory(int categoryId, String categoryName, String description, double price, int quantity) {
+        return categoryDAO.updateCategory(categoryId, categoryName, description, price, quantity);
+    }
+
+    /** Remove a category */
     public void removeCategory(Category category) {
         categoryDAO.deleteCategory(category.getCategoryId());
     }
-
-    /**
-     * Aktualizuje kategorii
-     */
-    public boolean updateCategory(Category category) {
-        return categoryDAO.updateCategory(category.getCategoryId(), category.getCategoryName());
-    }
 }
-

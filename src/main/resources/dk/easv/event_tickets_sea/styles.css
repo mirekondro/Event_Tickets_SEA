@@ -350,3 +350,13 @@
     -fx-font-size: 10px;
     -fx-text-fill: #6B7280;
 }
+.eye-btn {
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+    -fx-padding: 0;
+    -fx-font-size: 16px;
+    -fx-border-color: transparent;
+}
+.eye-btn:hover {
+    -fx-background-color: transparent;
+}

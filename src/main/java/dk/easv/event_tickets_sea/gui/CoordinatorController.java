@@ -79,6 +79,11 @@ public class CoordinatorController {
     }
 
     @FXML
+    private void handleManageCategories() throws IOException {
+        openModal("manage-categories.fxml", "Manage Ticket Categories");
+    }
+
+    @FXML
     private void handleAssignCoCoordinator() throws IOException {
         Event selectedEvent = eventsTable.getSelectionModel().getSelectedItem();
         if (selectedEvent != null) {

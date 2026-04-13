@@ -10,6 +10,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
+<?import dk.easv.event_tickets_sea.model.Category?>
 
 <VBox prefWidth="550.0" spacing="20.0" styleClass="app-background" stylesheets="@styles.css"
       xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
@@ -46,7 +47,7 @@
         <HBox spacing="16.0">
             <VBox spacing="8.0" HBox.hgrow="ALWAYS">
                 <Label styleClass="field-label" text="Ticket Category" />
-                <ComboBox fx:id="ticketCategoryComboBox" maxWidth="Infinity" promptText="Select type (VIP, Regular...)" styleClass="input-field" />
+                <ComboBox fx:id="ticketCategoryComboBox" maxWidth="Infinity" promptText="Select type (VIP, Regular...)" styleClass="input-field" prefHeight="40" />
             </VBox>
             <VBox spacing="8.0">
                 <Label styleClass="field-label" text="Quantity" />

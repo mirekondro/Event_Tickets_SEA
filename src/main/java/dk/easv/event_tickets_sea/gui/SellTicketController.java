@@ -2,7 +2,9 @@ package dk.easv.event_tickets_sea.gui;
 
 import dk.easv.event_tickets_sea.HelloApplication;
 import dk.easv.event_tickets_sea.model.Event;
+import dk.easv.event_tickets_sea.model.Category;
 import dk.easv.event_tickets_sea.model.User;
+import dk.easv.event_tickets_sea.util.CategoryManager;
 import dk.easv.event_tickets_sea.util.UserManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -26,14 +28,17 @@ public class SellTicketController {
     @FXML private Label issuedByLabel;
     @FXML private TextField customerNameField;
     @FXML private TextField customerEmailField;
-    @FXML private ComboBox<String> ticketCategoryComboBox;
+    @FXML private ComboBox<Category> ticketCategoryComboBox;
     @FXML private Spinner<Integer> quantitySpinner;
 
     private Event event;
 
     @FXML
     public void initialize() {
-        ticketCategoryComboBox.getItems().addAll("Regular", "VIP", "Backstage");
+        // Load categories from database
+        @SuppressWarnings("unchecked")
+        ComboBox<Object> cb = (ComboBox<Object>) (Object) ticketCategoryComboBox;
+        cb.setItems((javafx.collections.ObservableList<Object>) (Object) CategoryManager.getInstance().getCategories());
         ticketCategoryComboBox.getSelectionModel().selectFirst();
         quantitySpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 20, 1));
 
@@ -91,7 +96,7 @@ public class SellTicketController {
                     this.event,
                     customerNameField.getText().trim(),
                     customerEmailField.getText().trim(),
-                    ticketCategoryComboBox.getValue(),
+                    ticketCategoryComboBox.getValue() != null ? ticketCategoryComboBox.getValue().getCategoryName() : "Regular",
                     quantitySpinner.getValue(),
                     issuedBy,
                     ticketId
@@ -113,7 +118,7 @@ public class SellTicketController {
             showAlert(Alert.AlertType.ERROR, "Validation Error", "Missing email", "Please enter customer email.");
             return false;
         }
-        if (ticketCategoryComboBox.getValue() == null || ticketCategoryComboBox.getValue().trim().isEmpty()) {
+        if (ticketCategoryComboBox.getValue() == null) {
             showAlert(Alert.AlertType.ERROR, "Validation Error", "Missing category", "Please select ticket category.");
             return false;
         }

@@ -68,7 +68,7 @@
 
                 <Label text="Tickets &amp; Admission" styleClass="field-label" />
 
-                <Button maxWidth="Infinity" mnemonicParsing="false" styleClass="btn, btn-secondary" text="Manage Categories (VIP...)" />
+                <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#handleManageCategories" styleClass="btn, btn-secondary" text="Manage Categories (VIP...)" />
 
                 <Button maxWidth="Infinity" mnemonicParsing="false" onAction="#handleSpecialVouchers" styleClass="btn, btn-secondary" text="Special Vouchers (Beer/Food)" />
 

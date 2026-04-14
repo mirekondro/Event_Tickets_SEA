@@ -1,4 +1,4 @@
-Server=localhost
+Server=10.176.111.34
 Database=event_ticket_system_sea
 User=CS2025b_e_22
 Password=CS2025bE22#23

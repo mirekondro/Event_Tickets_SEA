@@ -3,8 +3,10 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
 <VBox alignment="CENTER" prefHeight="520.0" prefWidth="820.0" spacing="20.0"
@@ -20,21 +22,35 @@
             <children>
                 <VBox spacing="8.0" alignment="CENTER">
                     <Label text="Event Tickets SEA" styleClass="title-label"/>
-                    <Label text="Přihlášení do systému" styleClass="subtitle-label"/>
+                    <Label text="Sign in to your account" styleClass="subtitle-label"/>
                 </VBox>
 
                 <VBox spacing="8.0">
-                    <Label text="Uživatelské jméno" styleClass="field-label" />
-                    <TextField fx:id="usernameField" promptText="zadej: admin nebo coordinator..." styleClass="input-field"/>
+                    <Label text="Username" styleClass="field-label" />
+                    <TextField fx:id="usernameField" promptText="Enter username..." styleClass="input-field"/>
                 </VBox>
 
-                <HBox alignment="CENTER_RIGHT">
-                    <Label text="Zadej 'admin' pro admin panel" styleClass="link-label" />
-                </HBox>
+                <VBox spacing="8.0">
+                    <Label text="Password" styleClass="field-label" />
+                    <StackPane>
+                        <PasswordField fx:id="passwordField" promptText="••••••••" styleClass="input-field"
+                                       StackPane.alignment="CENTER_LEFT"/>
+                        <TextField fx:id="passwordVisible" promptText="••••••••" styleClass="input-field"
+                                   visible="false" managed="false"
+                                   StackPane.alignment="CENTER_LEFT"/>
+                        <Button fx:id="togglePasswordBtn" styleClass="eye-btn" text="👁"
+                                onAction="#handleTogglePassword"
+                                StackPane.alignment="CENTER_RIGHT">
+                            <StackPane.margin>
+                                <Insets right="10"/>
+                            </StackPane.margin>
+                        </Button>
+                    </StackPane>
+                </VBox>
 
                 <Button fx:id="loginBtn" defaultButton="true" maxWidth="Infinity"
                         mnemonicParsing="false" onAction="#handleLogin"
-                        styleClass="btn, btn-primary, btn-large" text="Přihlásit se" />
+                        styleClass="btn, btn-primary, btn-large" text="Sign In" />
             </children>
         </VBox>
     </children>

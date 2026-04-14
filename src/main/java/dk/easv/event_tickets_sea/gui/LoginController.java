@@ -8,16 +8,47 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import java.io.IOException;
 
 public class LoginController {
+
     @FXML private TextField usernameField;
+    @FXML private PasswordField passwordField;
+    @FXML private TextField passwordVisible;
+
+    private boolean passwordShown = false;
+
+    @FXML
+    private void handleTogglePassword() {
+        if (passwordShown) {
+            // Hide password: copy text back to PasswordField and hide TextField
+            passwordField.setText(passwordVisible.getText());
+            passwordField.setVisible(true);
+            passwordField.setManaged(true);
+            passwordVisible.setVisible(false);
+            passwordVisible.setManaged(false);
+        } else {
+            // Show password: copy text to plain TextField and show it
+            passwordVisible.setText(passwordField.getText());
+            passwordVisible.setVisible(true);
+            passwordVisible.setManaged(true);
+            passwordField.setVisible(false);
+            passwordField.setManaged(false);
+        }
+        passwordShown = !passwordShown;
+    }
+
+    private String getPassword() {
+        return passwordShown ? passwordVisible.getText() : passwordField.getText();
+    }
 
     @FXML
     private void handleLogin(ActionEvent event) throws IOException {
         String inputUsername = usernameField.getText();
+        String inputPassword = getPassword();
 
         if (inputUsername == null || inputUsername.trim().isEmpty()) {
             return;
@@ -25,9 +56,6 @@ public class LoginController {
 
         inputUsername = inputUsername.toLowerCase().trim();
 
-        // Mapuj input na správné username v DB
-        // Pokud zadá "admin" -> jdi na admin page a nastav username "admin"
-        // Jinak -> jdi na coordinator page a nastav username "coordinator"
         String dbUsername;
         String role;
         String fxmlFile;
@@ -42,10 +70,8 @@ public class LoginController {
             fxmlFile = "coordinator-dashboard.fxml";
         }
 
-        // Vytvoř uživatele z DB dat a ulož ho do UserManager
         User user = new User(dbUsername, role, dbUsername + "@easv.dk", dbUsername.toUpperCase());
         UserManager.getInstance().setLoggedInUser(user);
-
 
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource(fxmlFile));
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();

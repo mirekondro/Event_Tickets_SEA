@@ -10,6 +10,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
+<?import dk.easv.event_tickets_sea.model.Category?>
 
 <VBox prefWidth="550.0" spacing="20.0" styleClass="app-background" stylesheets="@styles.css"
       xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
@@ -19,6 +20,9 @@
     <VBox spacing="4.0">
         <Label styleClass="title-label" text="Issue Tickets" />
         <Label styleClass="subtitle-label" text="Tickets are generated with secure UUID and 1D/2D Barcodes." />
+        <Label styleClass="field-label" text="Event" />
+        <Label fx:id="selectedEventLabel" styleClass="subtitle-label" text="No event selected" />
+        <Label fx:id="issuedByLabel" styleClass="subtitle-label" text="Unknown user" />
     </VBox>
 
     <VBox spacing="16.0" styleClass="card">
@@ -28,11 +32,11 @@
 
         <VBox spacing="8.0">
             <Label styleClass="field-label" text="Customer Full Name *" />
-            <TextField promptText="John Doe" styleClass="input-field" />
+            <TextField fx:id="customerNameField" promptText="John Doe" styleClass="input-field" />
         </VBox>
         <VBox spacing="8.0">
             <Label styleClass="field-label" text="Customer Email *" />
-            <TextField promptText="john@example.com" styleClass="input-field" />
+            <TextField fx:id="customerEmailField" promptText="john@example.com" styleClass="input-field" />
         </VBox>
     </VBox>
 
@@ -43,11 +47,11 @@
         <HBox spacing="16.0">
             <VBox spacing="8.0" HBox.hgrow="ALWAYS">
                 <Label styleClass="field-label" text="Ticket Category" />
-                <ComboBox maxWidth="Infinity" promptText="Select type (VIP, Regular...)" styleClass="input-field" />
+                <ComboBox fx:id="ticketCategoryComboBox" maxWidth="Infinity" promptText="Select type (VIP, Regular...)" styleClass="input-field" prefHeight="40" />
             </VBox>
             <VBox spacing="8.0">
                 <Label styleClass="field-label" text="Quantity" />
-                <Spinner editable="true" prefWidth="100.0" styleClass="input-field" />
+                <Spinner fx:id="quantitySpinner" editable="true" prefWidth="100.0" styleClass="input-field" />
             </VBox>
         </HBox>
 

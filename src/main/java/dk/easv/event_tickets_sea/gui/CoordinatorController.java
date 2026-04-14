@@ -34,8 +34,7 @@ public class CoordinatorController {
         colEndDate.setCellValueFactory(new PropertyValueFactory<>("endDateTimeFormatted"));
         colNotes.setCellValueFactory(new PropertyValueFactory<>("notes"));
 
-        // Load events into table
-        eventsTable.setItems(EventManager.getInstance().getEvents());
+        reloadEventsTable();
     }
 
     @FXML
@@ -49,16 +48,56 @@ public class CoordinatorController {
     @FXML
     private void handleCreateEvent() throws IOException {
         openModal("event-form.fxml", "Create New Event");
+        reloadEventsTable();
     }
 
     @FXML
     private void handleManageTickets() throws IOException {
-        openModal("sell-ticket.fxml", "Sell / Print Tickets");
+        Event selectedEvent = eventsTable.getSelectionModel().getSelectedItem();
+        if (selectedEvent == null) {
+            showAlert(Alert.AlertType.WARNING, "No Selection",
+                    "No Event Selected",
+                    "Please select an event before selling/printing tickets.");
+            return;
+        }
+
+        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("sell-ticket.fxml"));
+        Stage stage = new Stage();
+        stage.setScene(new Scene(fxmlLoader.load()));
+        stage.setTitle("Sell / Print Tickets");
+        stage.initModality(Modality.APPLICATION_MODAL);
+
+        SellTicketController controller = fxmlLoader.getController();
+        controller.setEvent(selectedEvent);
+
+        stage.showAndWait();
     }
 
     @FXML
     private void handleSpecialVouchers() throws IOException {
         openModal("voucher-print-view.fxml", "Special Voucher");
+    }
+
+    @FXML
+    private void handleManageCategories() throws IOException {
+        Event selectedEvent = eventsTable.getSelectionModel().getSelectedItem();
+        if (selectedEvent == null) {
+            showAlert(Alert.AlertType.WARNING, "No Selection",
+                    "No Event Selected",
+                    "Please select an event before managing categories.");
+            return;
+        }
+
+        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("manage-categories.fxml"));
+        Stage stage = new Stage();
+        stage.setScene(new Scene(fxmlLoader.load()));
+        stage.setTitle("Manage Ticket Categories");
+        stage.initModality(Modality.APPLICATION_MODAL);
+
+        ManageCategoriesController controller = fxmlLoader.getController();
+        controller.setEvent(selectedEvent);
+
+        stage.showAndWait();
     }
 
     @FXML
@@ -98,7 +137,13 @@ public class CoordinatorController {
         Event selectedEvent = eventsTable.getSelectionModel().getSelectedItem();
         if (selectedEvent != null) {
             EventManager.getInstance().removeEvent(selectedEvent);
+            reloadEventsTable();
         }
+    }
+
+    private void reloadEventsTable() {
+        eventsTable.setItems(EventManager.getInstance().getEvents());
+        eventsTable.refresh();
     }
 
     @FXML

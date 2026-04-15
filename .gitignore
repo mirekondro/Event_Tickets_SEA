@@ -40,3 +40,4 @@ build/
 
 ### Configuration Files ###
 config/config.settings
+config/email.settings

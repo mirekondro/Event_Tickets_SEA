@@ -4,7 +4,9 @@ import dk.easv.event_tickets_sea.HelloApplication;
 import dk.easv.event_tickets_sea.model.Event;
 import dk.easv.event_tickets_sea.model.Category;
 import dk.easv.event_tickets_sea.model.User;
+import dk.easv.event_tickets_sea.db.TicketDAO;
 import dk.easv.event_tickets_sea.util.CategoryManager;
+import dk.easv.event_tickets_sea.util.TicketEmailService;
 import dk.easv.event_tickets_sea.util.UserManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -21,6 +23,8 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class SellTicketController {
@@ -109,6 +113,80 @@ public class SellTicketController {
         stage.show();
     }
 
+    @FXML
+    private void handleSendEmail(ActionEvent event) {
+        if (!validateInputs()) {
+            return;
+        }
+
+        if (this.event == null) {
+            showAlert(Alert.AlertType.ERROR, "Missing Event", "No event selected", "Please select an event from dashboard first.");
+            return;
+        }
+
+        Category selectedCategory = ticketCategoryComboBox.getValue();
+        if (selectedCategory == null) {
+            showAlert(Alert.AlertType.ERROR, "Missing Category", "No ticket category selected", "Please choose a ticket category first.");
+            return;
+        }
+
+        User loggedInUser = UserManager.getInstance().getLoggedInUser();
+        String soldByUsername = loggedInUser != null ? loggedInUser.getUsername() : null;
+        if (soldByUsername == null || soldByUsername.isBlank()) {
+            showAlert(Alert.AlertType.ERROR, "Missing User", "No logged in user", "Please log in again before selling tickets.");
+            return;
+        }
+
+        int quantity = quantitySpinner.getValue();
+        List<String> soldTicketCodes = new ArrayList<>();
+        for (int i = 0; i < quantity; i++) {
+            String ticketCode = TicketDAO.getInstance().sellTicketByIdAndGetCode(
+                    selectedCategory.getCategoryId(),
+                    customerNameField.getText().trim(),
+                    customerEmailField.getText().trim(),
+                    soldByUsername
+            );
+            if (ticketCode == null) {
+                break;
+            }
+            soldTicketCodes.add(ticketCode);
+        }
+
+        if (soldTicketCodes.isEmpty()) {
+            String dbReason = TicketDAO.getInstance().getLastErrorMessage();
+            String details = "Ticket was not saved to the database.";
+            if (dbReason != null && !dbReason.isBlank()) {
+                details += "\n\nReason: " + dbReason;
+            }
+            showAlert(Alert.AlertType.ERROR, "Sale Failed", "Could not sell ticket", details);
+            return;
+        }
+
+        String allCodes = String.join(", ", soldTicketCodes);
+
+        try {
+            TicketEmailService.getInstance().sendTicketEmail(
+                    customerEmailField.getText().trim(),
+                    customerNameField.getText().trim(),
+                    this.event,
+                    selectedCategory,
+                    soldTicketCodes.size(),
+                    allCodes,
+                    loggedInUser != null ? loggedInUser.getFullName() : "Unknown user"
+            );
+
+            String message = "Ticket code(s) " + allCodes + " were sent to " + customerEmailField.getText().trim() + ".";
+            if (soldTicketCodes.size() < quantity) {
+                message += "\n\nOnly " + soldTicketCodes.size() + " out of " + quantity + " tickets were sold (insufficient availability).";
+            }
+            showAlert(Alert.AlertType.INFORMATION, "Email Sent", "Ticket emailed successfully", message);
+        } catch (IllegalStateException e) {
+            showAlert(Alert.AlertType.WARNING, "Ticket Saved", "Email not configured", e.getMessage() + "\n\nThe ticket was sold and stored in the database, but the email could not be sent.");
+        } catch (RuntimeException e) {
+            showAlert(Alert.AlertType.ERROR, "Email Failed", "Could not send ticket email", e.getMessage());
+        }
+    }
+
     private boolean validateInputs() {
         if (customerNameField.getText().trim().isEmpty()) {
             showAlert(Alert.AlertType.ERROR, "Validation Error", "Missing name", "Please enter customer full name.");
@@ -120,6 +198,10 @@ public class SellTicketController {
         }
         if (ticketCategoryComboBox.getValue() == null) {
             showAlert(Alert.AlertType.ERROR, "Validation Error", "Missing category", "Please select ticket category.");
+            return false;
+        }
+        if (quantitySpinner.getValue() == null || quantitySpinner.getValue() < 1) {
+            showAlert(Alert.AlertType.ERROR, "Validation Error", "Invalid quantity", "Please select at least 1 ticket.");
             return false;
         }
         return true;

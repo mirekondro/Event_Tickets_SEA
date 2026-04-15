@@ -14,6 +14,7 @@ import java.util.Map;
 public class TicketDAO {
     private static TicketDAO instance;
     private final DatabaseConnection dbConnection;
+    private String lastErrorMessage;
 
     private TicketDAO() {
         this.dbConnection = DatabaseConnection.getInstance();
@@ -24,6 +25,10 @@ public class TicketDAO {
             instance = new TicketDAO();
         }
         return instance;
+    }
+
+    public String getLastErrorMessage() {
+        return lastErrorMessage;
     }
 
     /**
@@ -57,33 +62,104 @@ public class TicketDAO {
      * Prodá lístek
      */
     public boolean sellTicket(String eventName, String ticketType, String buyerName, String buyerEmail, String soldByUsername) {
-        String query = "EXEC sp_SellTicket @TicketId = (SELECT TOP 1 TicketId FROM Tickets t " +
-                       "JOIN Events e ON t.EventId = e.EventId " +
-                       "WHERE e.EventName = ? AND t.TicketType = ? AND t.IsActive = 1), " +
-                       "@BuyerName = ?, @BuyerEmail = ?, @SoldBy = (SELECT UserId FROM Users WHERE Username = ?), " +
-                       "@TicketCode = ?";
+        return sellTicketAndGetCode(eventName, ticketType, buyerName, buyerEmail, soldByUsername) != null;
+    }
 
-        try (Connection conn = dbConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-
-            String ticketCode = generateTicketCode();
-            stmt.setString(1, eventName);
-            stmt.setString(2, ticketType);
-            stmt.setString(3, buyerName);
-            stmt.setString(4, buyerEmail);
-            stmt.setString(5, soldByUsername);
-            stmt.setString(6, ticketCode);
-
-            stmt.executeUpdate();
-            return true;
+    /**
+     * Prodá lístek a vrátí ticket code pro email potvrzení
+     */
+    public String sellTicketAndGetCode(String eventName, String ticketType, String buyerName, String buyerEmail, String soldByUsername) {
+        lastErrorMessage = null;
+        try (Connection conn = dbConnection.getConnection()) {
+            Integer ticketId = resolveTicketId(conn, eventName, ticketType);
+            if (ticketId == null) {
+                lastErrorMessage = "No available ticket for selected event/category.";
+                return null;
+            }
+            return sellTicketByIdInternal(conn, ticketId, buyerName, buyerEmail, soldByUsername);
         } catch (SQLServerException e) {
+            lastErrorMessage = "SQL Server error: " + e.getMessage();
             System.err.println("Sell ticket error - SQL Server: " + e.getMessage());
             e.printStackTrace();
         } catch (SQLException e) {
+            lastErrorMessage = "Database error: " + e.getMessage();
             System.err.println("Sell ticket error: " + e.getMessage());
             e.printStackTrace();
         }
-        return false;
+        return null;
+    }
+
+    /**
+     * Prodá lístek podle TicketId a vrátí ticket code.
+     */
+    public String sellTicketByIdAndGetCode(int ticketId, String buyerName, String buyerEmail, String soldByUsername) {
+        lastErrorMessage = null;
+        try (Connection conn = dbConnection.getConnection()) {
+            return sellTicketByIdInternal(conn, ticketId, buyerName, buyerEmail, soldByUsername);
+        } catch (SQLServerException e) {
+            lastErrorMessage = "SQL Server error: " + e.getMessage();
+            System.err.println("Sell ticket by id error - SQL Server: " + e.getMessage());
+            e.printStackTrace();
+        } catch (SQLException e) {
+            lastErrorMessage = "Database error: " + e.getMessage();
+            System.err.println("Sell ticket by id error: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private Integer resolveTicketId(Connection conn, String eventName, String ticketType) throws SQLException {
+        String ticketQuery = "SELECT TOP 1 t.TicketId FROM Tickets t " +
+                "JOIN Events e ON t.EventId = e.EventId " +
+                "WHERE e.EventName = ? AND t.TicketType = ? AND t.IsActive = 1 AND t.QuantitySold < t.QuantityAvailable " +
+                "ORDER BY t.TicketId";
+
+        try (PreparedStatement stmt = conn.prepareStatement(ticketQuery)) {
+            stmt.setString(1, eventName);
+            stmt.setString(2, ticketType);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("TicketId");
+                }
+            }
+        }
+        return null;
+    }
+
+    private Integer resolveSoldById(Connection conn, String soldByUsername) throws SQLException {
+        String soldByQuery = "SELECT COALESCE((SELECT UserId FROM Users WHERE Username = ? AND IsActive = 1), " +
+                "(SELECT TOP 1 UserId FROM Users WHERE IsActive = 1 ORDER BY UserId)) AS SoldById";
+
+        try (PreparedStatement stmt = conn.prepareStatement(soldByQuery)) {
+            stmt.setString(1, soldByUsername);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    int soldById = rs.getInt("SoldById");
+                    return rs.wasNull() ? null : soldById;
+                }
+            }
+        }
+        return null;
+    }
+
+    private String sellTicketByIdInternal(Connection conn, int ticketId, String buyerName, String buyerEmail, String soldByUsername) throws SQLException {
+        Integer soldById = resolveSoldById(conn, soldByUsername);
+        if (soldById == null) {
+            lastErrorMessage = "No active seller user found in database.";
+            return null;
+        }
+
+        String ticketCode = generateTicketCode();
+        String call = "{call sp_SellTicket(?, ?, ?, ?, ?)}";
+        try (CallableStatement stmt = conn.prepareCall(call)) {
+            stmt.setInt(1, ticketId);
+            stmt.setString(2, buyerName);
+            stmt.setString(3, buyerEmail);
+            stmt.setInt(4, soldById);
+            stmt.setString(5, ticketCode);
+            stmt.execute();
+        }
+        return ticketCode;
     }
 
     /**

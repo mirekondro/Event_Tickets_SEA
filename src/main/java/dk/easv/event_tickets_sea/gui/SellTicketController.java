@@ -1,53 +1,79 @@
 package dk.easv.event_tickets_sea.gui;
 
 import dk.easv.event_tickets_sea.HelloApplication;
-import dk.easv.event_tickets_sea.model.Event;
 import dk.easv.event_tickets_sea.model.Category;
-import dk.easv.event_tickets_sea.model.User;
+import dk.easv.event_tickets_sea.model.Event;
 import dk.easv.event_tickets_sea.util.CategoryManager;
-import dk.easv.event_tickets_sea.util.UserManager;
+import dk.easv.event_tickets_sea.util.EventManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.Spinner;
-import javafx.scene.control.SpinnerValueFactory;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.TextField;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import java.io.IOException;
-import java.lang.reflect.Method;
-import java.util.UUID;
 
 public class SellTicketController {
-    @FXML private Label selectedEventLabel;
-    @FXML private Label issuedByLabel;
+
+    @FXML private ComboBox<Event> eventComboBox;
+    @FXML private ComboBox<Category> categoryComboBox;
     @FXML private TextField customerNameField;
     @FXML private TextField customerEmailField;
-    @FXML private ComboBox<Category> ticketCategoryComboBox;
-    @FXML private Spinner<Integer> quantitySpinner;
-
-    private Event event;
+    @FXML private TextField quantityField;
 
     @FXML
     public void initialize() {
-        // Categories are loaded after event is selected.
-        quantitySpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 20, 1));
+        // Load all events
+        eventComboBox.setItems(EventManager.getInstance().getEvents());
 
-        User loggedInUser = UserManager.getInstance().getLoggedInUser();
-        issuedByLabel.setText(loggedInUser != null ? loggedInUser.getFullName() : "Unknown user");
+        // Show event name in combobox
+        eventComboBox.setCellFactory(lv -> new ListCell<>() {
+            @Override
+            protected void updateItem(Event event, boolean empty) {
+                super.updateItem(event, empty);
+                setText(empty || event == null ? null : event.getEventName());
+            }
+        });
+        eventComboBox.setButtonCell(new ListCell<>() {
+            @Override
+            protected void updateItem(Event event, boolean empty) {
+                super.updateItem(event, empty);
+                setText(empty || event == null ? null : event.getEventName());
+            }
+        });
+
+        // When event is selected, load its categories
+        eventComboBox.getSelectionModel().selectedItemProperty().addListener((obs, old, selected) -> {
+            categoryComboBox.getItems().clear();
+            if (selected != null) {
+                categoryComboBox.setItems(CategoryManager.getInstance().getCategories(selected.getEventName()));
+            }
+        });
+
+        // Show category name + price in combobox
+        categoryComboBox.setCellFactory(lv -> new ListCell<>() {
+            @Override
+            protected void updateItem(Category cat, boolean empty) {
+                super.updateItem(cat, empty);
+                setText(empty || cat == null ? null : cat.getCategoryName() + " — " + cat.getPriceFormatted());
+            }
+        });
+        categoryComboBox.setButtonCell(new ListCell<>() {
+            @Override
+            protected void updateItem(Category cat, boolean empty) {
+                super.updateItem(cat, empty);
+                setText(empty || cat == null ? null : cat.getCategoryName() + " — " + cat.getPriceFormatted());
+            }
+        });
     }
 
     public void setEvent(Event event) {
-        this.event = event;
-        selectedEventLabel.setText(event != null ? event.getEventName() : "No event selected");
         if (event != null) {
-            ticketCategoryComboBox.setItems(CategoryManager.getInstance().getCategories(event.getEventName()));
-            ticketCategoryComboBox.getSelectionModel().selectFirst();
+            eventComboBox.getSelectionModel().select(event);
         }
     }
 
@@ -59,77 +85,12 @@ public class SellTicketController {
 
     @FXML
     private void handleGenerate(ActionEvent event) throws IOException {
-        if (!validateInputs()) {
-            return;
-        }
-
-        if (this.event == null) {
-            showAlert(Alert.AlertType.ERROR, "Missing Event", "No event selected", "Please select an event from dashboard first.");
-            return;
-        }
-
-        String ticketId = UUID.randomUUID().toString();
-        User loggedInUser = UserManager.getInstance().getLoggedInUser();
-        String issuedBy = loggedInUser != null ? loggedInUser.getFullName() : "Unknown user";
-
         handleCancel(event);
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("ticket-print-view.fxml"));
         Stage stage = new Stage();
         stage.setScene(new Scene(fxmlLoader.load()));
         stage.setTitle("Ticket Preview");
         stage.initModality(Modality.APPLICATION_MODAL);
-
-        Object controller = fxmlLoader.getController();
-        try {
-            Method setTicketDataMethod = controller.getClass().getMethod(
-                    "setTicketData",
-                    Event.class,
-                    String.class,
-                    String.class,
-                    String.class,
-                    int.class,
-                    String.class,
-                    String.class
-            );
-            setTicketDataMethod.invoke(
-                    controller,
-                    this.event,
-                    customerNameField.getText().trim(),
-                    customerEmailField.getText().trim(),
-                    ticketCategoryComboBox.getValue() != null ? ticketCategoryComboBox.getValue().getCategoryName() : "Regular",
-                    quantitySpinner.getValue(),
-                    issuedBy,
-                    ticketId
-            );
-        } catch (ReflectiveOperationException e) {
-            showAlert(Alert.AlertType.ERROR, "UI Error", "Ticket preview failed", "Could not pass ticket data to preview window.");
-            return;
-        }
-
         stage.show();
-    }
-
-    private boolean validateInputs() {
-        if (customerNameField.getText().trim().isEmpty()) {
-            showAlert(Alert.AlertType.ERROR, "Validation Error", "Missing name", "Please enter customer full name.");
-            return false;
-        }
-        if (customerEmailField.getText().trim().isEmpty()) {
-            showAlert(Alert.AlertType.ERROR, "Validation Error", "Missing email", "Please enter customer email.");
-            return false;
-        }
-        if (ticketCategoryComboBox.getValue() == null) {
-            showAlert(Alert.AlertType.ERROR, "Validation Error", "Missing category", "Please select ticket category.");
-            return false;
-        }
-        return true;
-    }
-
-    private void showAlert(Alert.AlertType type, String title, String header, String content) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(header);
-        alert.setContentText(content);
-        alert.showAndWait();
     }
 }

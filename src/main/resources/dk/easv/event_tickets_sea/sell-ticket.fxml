@@ -4,6 +4,7 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
@@ -16,13 +17,15 @@
     <VBox spacing="4.0">
         <Label styleClass="title-label" text="Issue Tickets"/>
         <Label styleClass="subtitle-label" text="Tickets are generated with secure UUID and 1D/2D Barcodes."/>
+        <Label styleClass="field-label" text="Event"/>
+        <Label fx:id="selectedEventLabel" styleClass="subtitle-label" text="No event selected"/>
+        <Label fx:id="issuedByLabel" styleClass="subtitle-label" text="Unknown user"/>
     </VBox>
 
     <VBox spacing="16.0" styleClass="card">
         <padding><Insets bottom="20" left="20" right="20" top="20"/></padding>
         <Label styleClass="section-title" text="Customer Details"/>
         <Label styleClass="subtitle-label" text="Tickets must be assigned to a person."/>
-
         <VBox spacing="8.0">
             <Label styleClass="field-label" text="Customer Full Name *"/>
             <TextField fx:id="customerNameField" promptText="John Doe" styleClass="input-field"/>
@@ -36,30 +39,26 @@
     <VBox spacing="16.0" styleClass="card">
         <padding><Insets bottom="20" left="20" right="20" top="20"/></padding>
         <Label styleClass="section-title" text="Ticket Details"/>
-
         <HBox spacing="16.0">
             <VBox spacing="8.0" HBox.hgrow="ALWAYS">
                 <Label styleClass="field-label" text="Ticket Category *"/>
-                <ComboBox fx:id="categoryComboBox" maxWidth="Infinity" promptText="Select category" styleClass="input-field"/>
+                <ComboBox fx:id="ticketCategoryComboBox" maxWidth="Infinity" promptText="Select type (VIP, Regular...)" styleClass="input-field" prefHeight="40"/>
             </VBox>
             <VBox spacing="8.0">
-                <Label styleClass="field-label" text="Quantity *"/>
-                <TextField fx:id="quantityField" promptText="1" styleClass="input-field" prefWidth="100.0"/>
+                <Label styleClass="field-label" text="Quantity"/>
+                <Spinner fx:id="quantitySpinner" editable="true" prefWidth="100.0" styleClass="input-field"/>
             </VBox>
         </HBox>
-
         <Separator style="-fx-padding: 8 0;"/>
-
         <HBox alignment="CENTER_LEFT" style="-fx-background-color: #F0FDF4; -fx-padding: 12; -fx-background-radius: 8;">
-            <Label style="-fx-text-fill: #166534; -fx-font-weight: bold;"
-                   text="Payment is handled IRL. Hand out tickets after payment."/>
+            <Label style="-fx-text-fill: #166534; -fx-font-weight: bold;" text="Payment is handled IRL. Hand out tickets after payment."/>
         </HBox>
     </VBox>
 
     <HBox spacing="12.0" alignment="CENTER_RIGHT">
         <Button styleClass="btn, btn-outline" text="Cancel" onAction="#handleCancel"/>
         <Region HBox.hgrow="ALWAYS"/>
-        <Button styleClass="btn, btn-secondary" text="Send via Email (PDF)" onAction="#handleCancel"/>
+        <Button styleClass="btn, btn-secondary" text="Send via Email (PDF)" onAction="#handleSendEmail"/>
         <Button styleClass="btn, btn-primary" text="Generate &amp; Print Ticket" onAction="#handleGenerate"/>
     </HBox>
 </VBox>

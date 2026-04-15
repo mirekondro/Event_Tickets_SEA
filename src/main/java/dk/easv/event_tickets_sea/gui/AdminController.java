@@ -12,11 +12,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ChoiceDialog;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -141,5 +137,34 @@ public class AdminController {
         alert.setHeaderText(header);
         alert.setContentText(content);
         alert.showAndWait();
+    }
+
+    @FXML
+    private void handleDeleteUser() {
+        User selectedUser = usersTable.getSelectionModel().getSelectedItem();
+        if (selectedUser == null) {
+            showAlert(Alert.AlertType.WARNING, "No Selection", "No User Selected",
+                    "Please select a user to delete.");
+            return;
+        }
+
+        // Prevent deleting yourself
+        User loggedIn = UserManager.getInstance().getLoggedInUser();
+        if (selectedUser.getUsername().equals(loggedIn.getUsername())) {
+            showAlert(Alert.AlertType.ERROR, "Not Allowed", "Cannot Delete Yourself",
+                    "You cannot delete your own account.");
+            return;
+        }
+
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Delete User");
+        confirm.setHeaderText("Delete '" + selectedUser.getUsername() + "'?");
+        confirm.setContentText("This action cannot be undone.");
+        confirm.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                UserManager.getInstance().removeUser(selectedUser);
+                usersTable.setItems(UserManager.getInstance().getUsers());
+            }
+        });
     }
 }

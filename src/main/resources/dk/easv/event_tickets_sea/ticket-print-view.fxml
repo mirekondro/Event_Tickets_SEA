@@ -1,73 +1,71 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.Region?>
-
 <VBox alignment="CENTER" prefHeight="480.0" prefWidth="800.0" styleClass="app-background" stylesheets="@styles.css"
       xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="dk.easv.event_tickets_sea.gui.TicketPrintController">
 
-    <Label text="Ticket Preview (Ready for Print / PDF)" styleClass="subtitle-label" style="-fx-padding: 0 0 20 0;" />
+    <Label text="Ticket Preview (Ready for Print / PDF)" styleClass="subtitle-label" style="-fx-padding: 0 0 20 0;"/>
 
     <HBox styleClass="ticket-container" maxWidth="700">
 
         <VBox spacing="16.0" styleClass="ticket-main" HBox.hgrow="ALWAYS">
             <VBox spacing="4.0">
-                <Label fx:id="categoryLabel" text="REGULAR ADMISSION" styleClass="badge, badge-filled" style="-fx-background-color: #FEF08A; -fx-text-fill: #854D0E;" />
-                <Label fx:id="eventNameLabel" text="Event" styleClass="ticket-event-title" />
+                <Label fx:id="categoryLabel" styleClass="badge, badge-filled"
+                       style="-fx-background-color: #FEF08A; -fx-text-fill: #854D0E;" text="CATEGORY"/>
+                <Label fx:id="eventNameLabel" styleClass="ticket-event-title" text="Event"/>
             </VBox>
 
             <HBox spacing="40.0">
                 <VBox spacing="4.0">
-                    <Label text="START" styleClass="field-label" />
-                    <Label fx:id="startDateTimeLabel" text="-" styleClass="subtitle-label" />
+                    <Label text="START" styleClass="field-label"/>
+                    <Label fx:id="startLabel" styleClass="subtitle-label" text="-"/>
                 </VBox>
                 <VBox spacing="4.0">
-                    <Label text="END (Optional)" styleClass="field-label" />
-                    <Label fx:id="endDateTimeLabel" text="-" styleClass="subtitle-label" />
+                    <Label text="END (Optional)" styleClass="field-label"/>
+                    <Label fx:id="endLabel" styleClass="subtitle-label" text="-"/>
                 </VBox>
             </HBox>
 
             <VBox spacing="4.0">
-                <Label text="LOCATION" styleClass="field-label" />
-                <Label fx:id="locationLabel" text="-" styleClass="subtitle-label" />
-                <Label fx:id="guidanceLabel" text="Guidance: -" styleClass="subtitle-label" style="-fx-font-style: italic;" />
+                <Label text="LOCATION" styleClass="field-label"/>
+                <Label fx:id="locationLabel" styleClass="subtitle-label" text="-"/>
+                <Label fx:id="guidanceLabel" styleClass="subtitle-label" style="-fx-font-style: italic;" text="Guidance: -"/>
             </VBox>
 
             <VBox spacing="4.0">
-                <Label text="NOTES" styleClass="field-label" />
-                <Label fx:id="notesLabel" text="-" styleClass="subtitle-label" />
+                <Label text="NOTES" styleClass="field-label"/>
+                <Label fx:id="notesLabel" styleClass="subtitle-label" text="-"/>
             </VBox>
         </VBox>
 
         <VBox spacing="16.0" alignment="CENTER" styleClass="ticket-stub" prefWidth="240.0">
             <VBox alignment="CENTER" spacing="2.0">
-                <Label fx:id="customerNameLabel" text="Customer" styleClass="section-title" />
-                <Label fx:id="customerEmailLabel" text="email@example.com" styleClass="subtitle-label" />
-                <Label fx:id="quantityLabel" text="Qty: 1" styleClass="subtitle-label" />
-                <Label fx:id="issuedByLabel" text="Issued by: -" styleClass="subtitle-label" />
+                <Label fx:id="customerNameLabel" styleClass="section-title" text="Customer"/>
+                <Label fx:id="customerEmailLabel" styleClass="subtitle-label" text="email@example.com"/>
+                <Label fx:id="quantityLabel" styleClass="subtitle-label" text="Qty: 1"/>
+                <Label fx:id="issuedByLabel" styleClass="subtitle-label" text="Issued by: -"/>
             </VBox>
 
-            <Region VBox.vgrow="ALWAYS" />
+            <Region VBox.vgrow="ALWAYS"/>
 
             <VBox alignment="CENTER" prefHeight="100.0" prefWidth="100.0" styleClass="barcode-placeholder">
-                <Label text="[2D QR CODE]" styleClass="field-label" />
+                <Label text="[2D QR CODE]" styleClass="field-label"/>
             </VBox>
 
             <VBox alignment="CENTER" prefHeight="40.0" prefWidth="180.0" styleClass="barcode-placeholder">
-                <Label text="|| | |||| | ||| | ||" style="-fx-font-weight: bold; -fx-letter-spacing: 2px;" />
+                <Label text="|| | |||| | ||| | ||" style="-fx-font-weight: bold;"/>
             </VBox>
 
-            <Label fx:id="ticketIdLabel" text="ID: -" styleClass="uuid-text" />
+            <Label fx:id="ticketIdLabel" styleClass="uuid-text" text="ID: -"/>
         </VBox>
     </HBox>
 
     <Button text="Close Preview" styleClass="btn, btn-outline" onAction="#handleClose">
         <VBox.margin><Insets top="30" bottom="10"/></VBox.margin>
     </Button>
-
 </VBox>

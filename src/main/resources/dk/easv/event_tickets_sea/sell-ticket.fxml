@@ -37,11 +37,6 @@
         <padding><Insets bottom="20" left="20" right="20" top="20"/></padding>
         <Label styleClass="section-title" text="Ticket Details"/>
 
-        <VBox spacing="8.0">
-            <Label styleClass="field-label" text="Event *"/>
-            <ComboBox fx:id="eventComboBox" maxWidth="Infinity" promptText="Select an event" styleClass="input-field"/>
-        </VBox>
-
         <HBox spacing="16.0">
             <VBox spacing="8.0" HBox.hgrow="ALWAYS">
                 <Label styleClass="field-label" text="Ticket Category *"/>

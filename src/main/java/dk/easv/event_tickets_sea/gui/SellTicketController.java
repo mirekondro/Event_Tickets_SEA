@@ -4,7 +4,6 @@ import dk.easv.event_tickets_sea.HelloApplication;
 import dk.easv.event_tickets_sea.model.Category;
 import dk.easv.event_tickets_sea.model.Event;
 import dk.easv.event_tickets_sea.util.CategoryManager;
-import dk.easv.event_tickets_sea.util.EventManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -20,41 +19,15 @@ import java.io.IOException;
 
 public class SellTicketController {
 
-    @FXML private ComboBox<Event> eventComboBox;
     @FXML private ComboBox<Category> categoryComboBox;
     @FXML private TextField customerNameField;
     @FXML private TextField customerEmailField;
     @FXML private TextField quantityField;
 
+    private Event selectedEvent;
+
     @FXML
     public void initialize() {
-        // Load all events
-        eventComboBox.setItems(EventManager.getInstance().getEvents());
-
-        // Show event name in combobox
-        eventComboBox.setCellFactory(lv -> new ListCell<>() {
-            @Override
-            protected void updateItem(Event event, boolean empty) {
-                super.updateItem(event, empty);
-                setText(empty || event == null ? null : event.getEventName());
-            }
-        });
-        eventComboBox.setButtonCell(new ListCell<>() {
-            @Override
-            protected void updateItem(Event event, boolean empty) {
-                super.updateItem(event, empty);
-                setText(empty || event == null ? null : event.getEventName());
-            }
-        });
-
-        // When event is selected, load its categories
-        eventComboBox.getSelectionModel().selectedItemProperty().addListener((obs, old, selected) -> {
-            categoryComboBox.getItems().clear();
-            if (selected != null) {
-                categoryComboBox.setItems(CategoryManager.getInstance().getCategories(selected.getEventName()));
-            }
-        });
-
         // Show category name + price in combobox
         categoryComboBox.setCellFactory(lv -> new ListCell<>() {
             @Override
@@ -72,10 +45,11 @@ public class SellTicketController {
         });
     }
 
-    /** Pre-select the event when opened from coordinator dashboard */
+    /** Called from CoordinatorController to pass the selected event */
     public void setEvent(Event event) {
+        this.selectedEvent = event;
         if (event != null) {
-            eventComboBox.getSelectionModel().select(event);
+            categoryComboBox.setItems(CategoryManager.getInstance().getCategories(event.getEventName()));
         }
     }
 
@@ -87,15 +61,13 @@ public class SellTicketController {
 
     @FXML
     private void handleGenerate(ActionEvent event) throws IOException {
-        // Validate
-        Event selectedEvent = eventComboBox.getSelectionModel().getSelectedItem();
         Category selectedCategory = categoryComboBox.getSelectionModel().getSelectedItem();
-        String customerName = customerNameField.getText().trim();
+        String customerName  = customerNameField.getText().trim();
         String customerEmail = customerEmailField.getText().trim();
-        String qtyText = quantityField.getText().trim();
+        String qtyText       = quantityField.getText().trim();
 
         if (selectedEvent == null) {
-            showAlert("Missing Event", "Please select an event.");
+            showAlert("Missing Event", "No event was passed. Please close and select an event first.");
             return;
         }
         if (selectedCategory == null) {

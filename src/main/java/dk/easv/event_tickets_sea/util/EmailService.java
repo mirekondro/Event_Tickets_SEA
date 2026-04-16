@@ -9,6 +9,7 @@ import javax.mail.internet.MimeMessage;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.UUID;
 
 public class EmailService {
 
@@ -43,25 +44,21 @@ public class EmailService {
             smtpUser     = props.getProperty("SMTPUser",     "");
             smtpPassword = props.getProperty("SMTPPassword", "");
             smtpAuth     = Boolean.parseBoolean(props.getProperty("SMTPAuth",     "true"));
+            smtpStartTls = Boolean.parseBoolean(props.getProperty("SMTPStartTls", "true"));
 
-
-            // DEBUG - remove after fixing
-            System.out.println("SMTP loaded: host=" + smtpHost + " user=" + smtpUser + " passEmpty=" + smtpPassword.isEmpty());
+            System.out.println("SMTP loaded: host=" + smtpHost + " user=" + smtpUser
+                    + " passEmpty=" + smtpPassword.isEmpty());
         } catch (IOException e) {
             System.err.println("EmailService: Could not load SMTP config: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
-    /**
-     * Sends a ticket confirmation email to the customer.
-     * Returns true if sent successfully, false otherwise.
-     */
     public boolean sendTicketEmail(Event event, Category category,
                                    String customerName, String customerEmail,
                                    int quantity, String issuedBy, String ticketId) {
         if (smtpUser.isEmpty() || smtpPassword.isEmpty()) {
-            System.err.println("EmailService: SMTP credentials not configured in config.settings");
+            System.err.println("EmailService: SMTP credentials not configured.");
             return false;
         }
 
@@ -69,6 +66,7 @@ public class EmailService {
         mailProps.put("mail.smtp.host",            smtpHost);
         mailProps.put("mail.smtp.port",            smtpPort);
         mailProps.put("mail.smtp.auth",            String.valueOf(smtpAuth));
+        mailProps.put("mail.smtp.starttls.enable", String.valueOf(smtpStartTls));
         mailProps.put("mail.smtp.socketFactory.port",     smtpPort);
         mailProps.put("mail.smtp.socketFactory.class",    "javax.net.ssl.SSLSocketFactory");
         mailProps.put("mail.smtp.socketFactory.fallback", "false");
@@ -85,7 +83,8 @@ public class EmailService {
             message.setFrom(new InternetAddress(smtpUser, "Event Tickets SEA"));
             message.setRecipient(Message.RecipientType.TO, new InternetAddress(customerEmail));
             message.setSubject("Your ticket for " + event.getEventName());
-            message.setContent(buildHtmlBody(event, category, customerName, quantity, issuedBy, ticketId), "text/html; charset=UTF-8");
+            message.setContent(buildHtmlBody(event, category, customerName, quantity, issuedBy, ticketId),
+                    "text/html; charset=UTF-8");
 
             Transport.send(message);
             System.out.println("EmailService: Ticket email sent to " + customerEmail);
@@ -95,8 +94,6 @@ public class EmailService {
             e.printStackTrace();
             return false;
         }
-
-
     }
 
     private String buildHtmlBody(Event event, Category category,
@@ -109,8 +106,15 @@ public class EmailService {
         String location     = event.getLocation() != null ? event.getLocation() : "-";
         String notes        = event.getNotes() != null ? event.getNotes() : "-";
 
+        // Generate QR code as base64 PNG
+        String qrBase64 = QRCodeGenerator.generateQRCodeBase64(ticketId, 180);
+        String qrHtml = qrBase64 != null
+                ? "<img src='data:image/png;base64," + qrBase64 + "' width='180' height='180' alt='QR Code' style='display:block;margin:0 auto;'/>"
+                : "<p style='color:#9CA3AF;font-size:12px;'>QR code unavailable</p>";
+
         return "<!DOCTYPE html>" +
-                "<html><head><meta charset='UTF-8'></head><body style='font-family:Segoe UI,Arial,sans-serif;background:#F3F4F6;padding:32px;'>" +
+                "<html><head><meta charset='UTF-8'></head>" +
+                "<body style='font-family:Segoe UI,Arial,sans-serif;background:#F3F4F6;padding:32px;'>" +
                 "<div style='max-width:600px;margin:0 auto;background:white;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.10);'>" +
 
                 // Header
@@ -119,15 +123,18 @@ public class EmailService {
                 "<p style='color:#E0E7FF;margin:4px 0 0;font-size:14px;'>Your ticket confirmation</p>" +
                 "</div>" +
 
-                // Event name banner
+                // Event name
                 "<div style='background:#EEF2FF;padding:20px 32px;border-bottom:1px solid #E0E7FF;'>" +
                 "<h2 style='margin:0;color:#1E1B4B;font-size:20px;'>" + event.getEventName() + "</h2>" +
-                "<span style='display:inline-block;margin-top:8px;padding:4px 14px;background:#4F46E5;color:white;border-radius:20px;font-size:12px;font-weight:bold;'>" +
-                categoryName.toUpperCase() + "</span>" +
+                "<span style='display:inline-block;margin-top:8px;padding:4px 14px;background:#4F46E5;color:white;border-radius:20px;font-size:12px;font-weight:bold;'>"
+                + categoryName.toUpperCase() + "</span>" +
                 "</div>" +
 
-                // Ticket details
-                "<div style='padding:28px 32px;'>" +
+                // Two-column layout: details + QR code
+                "<div style='padding:28px 32px;display:flex;gap:24px;align-items:flex-start;'>" +
+
+                // Left: ticket details
+                "<div style='flex:1;'>" +
                 "<table style='width:100%;border-collapse:collapse;'>" +
                 row("Customer",  customerName) +
                 row("Quantity",  String.valueOf(quantity)) +
@@ -140,7 +147,16 @@ public class EmailService {
                 "</table>" +
                 "</div>" +
 
-                // Ticket ID footer
+                // Right: QR code
+                "<div style='text-align:center;min-width:180px;'>" +
+                "<p style='margin:0 0 8px;font-size:12px;font-weight:bold;color:#374151;'>Scan at entrance</p>" +
+                qrHtml +
+                "<p style='margin:8px 0 0;font-family:Courier New,monospace;font-size:10px;color:#9CA3AF;'>One-time use</p>" +
+                "</div>" +
+
+                "</div>" +
+
+                // Footer
                 "<div style='background:#F9FAFB;border-top:1px solid #E5E7EB;padding:16px 32px;'>" +
                 "<p style='margin:0;font-family:Courier New,monospace;font-size:11px;color:#6B7280;'>Ticket ID: " + ticketId + "</p>" +
                 "<p style='margin:6px 0 0;font-size:12px;color:#9CA3AF;'>Please show this email at the entrance. Payment is handled on-site.</p>" +
@@ -155,6 +171,4 @@ public class EmailService {
                 "<td style='padding:8px 0;font-size:13px;color:#1F2937;'>" + value + "</td>" +
                 "</tr>";
     }
-
 }
-

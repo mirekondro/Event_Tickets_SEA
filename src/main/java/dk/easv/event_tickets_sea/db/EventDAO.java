@@ -121,16 +121,24 @@ public class EventDAO {
      */
     public ObservableList<Event> getEventsByCoordinator(String coordinatorUsername) {
         ObservableList<Event> events = FXCollections.observableArrayList();
-        String query = "SELECT e.EventName, e.StartDate, e.StartTime, e.EndDate, e.EndTime, e.Location, e.LocationGuidance, e.Notes, u.FullName " +
+        String query = "SELECT DISTINCT e.EventName, e.StartDate, e.StartTime, e.EndDate, e.EndTime, " +
+                "e.Location, e.LocationGuidance, e.Notes, u.FullName " +
                 "FROM Events e " +
                 "LEFT JOIN Users u ON e.CoordinatorId = u.UserId " +
-                "WHERE e.CoordinatorId = (SELECT UserId FROM Users WHERE Username = ?) AND e.IsActive = 1 " +
-                "ORDER BY e.StartDate";
+                "WHERE e.IsActive = 1 AND (" +
+                "  e.CoordinatorId = (SELECT UserId FROM Users WHERE Username = ? AND IsActive = 1)" +
+                "  OR e.EventId IN (" +
+                "    SELECT ec.EventId FROM dbo.EventCoCoordinators ec " +
+                "    JOIN Users cu ON ec.UserId = cu.UserId " +
+                "    WHERE cu.Username = ? AND cu.IsActive = 1" +
+                "  )" +
+                ") ORDER BY e.StartDate";
 
         try (Connection conn = dbConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             stmt.setString(1, coordinatorUsername);
+            stmt.setString(2, coordinatorUsername);
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
@@ -225,10 +233,9 @@ public class EventDAO {
      * Přiřadí hlavního koordinátora k akci dle username
      */
     public boolean assignCoordinator(String eventName, String coordinatorUsername) {
-        String query = "UPDATE e SET e.CoordinatorId = u.UserId " +
-                "FROM Events e " +
-                "INNER JOIN Users u ON u.Username = ? AND u.IsActive = 1 " +
-                "WHERE e.EventName = ? AND e.IsActive = 1";
+        String query = "UPDATE Events SET CoordinatorId = " +
+                "(SELECT UserId FROM Users WHERE Username = ? AND IsActive = 1) " +
+                "WHERE EventName = ? AND IsActive = 1";
 
         try (Connection conn = dbConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -236,11 +243,14 @@ public class EventDAO {
             stmt.setString(1, coordinatorUsername);
             stmt.setString(2, eventName);
 
-            return stmt.executeUpdate() > 0;
+            int rows = stmt.executeUpdate();
+            System.out.println("assignCoordinator: updated " + rows + " rows for event=" + eventName + " coordinator=" + coordinatorUsername);
+            return rows > 0;
         } catch (SQLException e) {
             System.err.println("Assign coordinator error: " + e.getMessage());
             e.printStackTrace();
         }
         return false;
+
     }
 }

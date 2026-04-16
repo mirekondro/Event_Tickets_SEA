@@ -1,0 +1,11 @@
+# Copy this file to config/email.settings and fill in your SMTP details.
+# You can also use SMTP_* environment variables instead.
+
+SMTPHost=smtp.example.com
+SMTPPort=587
+SMTPUser=your-email@example.com
+SMTPPassword=your-password
+FromEmail=your-email@example.com
+SMTPAuth=true
+SMTPStartTls=true
+

@@ -29,9 +29,25 @@ public class CategoryManager {
         return categoryDAO.addCategory(eventName, categoryName, description, price, quantity);
     }
 
+    /** Backward-compatible shortcut for UI flows that only collect the name */
+    public boolean addCategory(String eventName, String categoryName) {
+        return categoryDAO.addCategory(eventName, categoryName, "", 0.0, 0);
+    }
+
     /** Update an existing category */
     public boolean updateCategory(int categoryId, String categoryName, String description, double price, int quantity) {
         return categoryDAO.updateCategory(categoryId, categoryName, description, price, quantity);
+    }
+
+    /** Backward-compatible shortcut for UI flows that only rename the category */
+    public boolean updateCategory(Category category) {
+        return categoryDAO.updateCategory(
+                category.getCategoryId(),
+                category.getCategoryName(),
+                category.getDescription(),
+                category.getPrice(),
+                category.getQuantity()
+        );
     }
 
     /** Remove a category */

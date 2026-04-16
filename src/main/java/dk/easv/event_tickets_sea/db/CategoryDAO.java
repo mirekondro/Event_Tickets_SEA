@@ -24,7 +24,7 @@ public class CategoryDAO {
     /** Get all ticket categories (rows in Tickets) for a specific event */
     public ObservableList<Category> getAllCategories(String eventName) {
         ObservableList<Category> categories = FXCollections.observableArrayList();
-        String query = "SELECT t.TicketId, t.TicketType, t.Price, t.QuantityAvailable " +
+        String query = "SELECT t.TicketId, t.TicketType, t.Price, t.QuantityAvailable, t.QuantitySold " +
                 "FROM Tickets t " +
                 "JOIN Events e ON t.EventId = e.EventId " +
                 "WHERE e.EventName = ? AND t.IsActive = 1 " +
@@ -36,10 +36,11 @@ public class CategoryDAO {
             stmt.setString(1, eventName);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
+                int available = rs.getInt("QuantityAvailable") - rs.getInt("QuantitySold");
                 categories.add(new Category(
                         rs.getInt("TicketId"),
                         rs.getString("TicketType"),
-                        "",                              // no Description column in Tickets
+                        "Price: " + rs.getDouble("Price") + " | Available: " + available,
                         rs.getDouble("Price"),
                         rs.getInt("QuantityAvailable")
                 ));
@@ -62,8 +63,7 @@ public class CategoryDAO {
             stmt.setDouble(2, price);
             stmt.setInt(3, quantity);
             stmt.setString(4, eventName);
-            stmt.executeUpdate();
-            return true;
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             System.err.println("Add category error: " + e.getMessage());
         }
@@ -81,8 +81,7 @@ public class CategoryDAO {
             stmt.setDouble(2, price);
             stmt.setInt(3, quantity);
             stmt.setInt(4, ticketId);
-            stmt.executeUpdate();
-            return true;
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             System.err.println("Update category error: " + e.getMessage());
         }
@@ -97,8 +96,7 @@ public class CategoryDAO {
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
             stmt.setInt(1, ticketId);
-            stmt.executeUpdate();
-            return true;
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             System.err.println("Delete category error: " + e.getMessage());
         }

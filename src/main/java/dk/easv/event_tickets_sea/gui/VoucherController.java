@@ -26,12 +26,10 @@ public class VoucherController {
 
     @FXML
     public void initialize() {
-        // Load events into combobox
         for (Event e : EventManager.getInstance().getEvents()) {
             eventComboBox.getItems().add(e.getEventName());
         }
 
-        // When "valid for all events" is checked, disable the event picker
         allEventsCheckBox.selectedProperty().addListener((obs, old, selected) -> {
             eventComboBox.setDisable(selected);
             if (selected) eventComboBox.getSelectionModel().clearSelection();
@@ -47,8 +45,8 @@ public class VoucherController {
         int quantity       = Integer.parseInt(quantityField.getText().trim());
         String createdBy   = UserManager.getInstance().getLoggedInUser().getUsername();
 
-        // Create vouchers in DB and get back the codes
-        ObservableList<String> codes = VoucherManager.getInstance().createVouchers(description, eventName, createdBy, quantity);
+        ObservableList<String> codes = VoucherManager.getInstance()
+                .createVouchers(description, eventName, createdBy, quantity);
 
         if (codes.isEmpty()) {
             showAlert(Alert.AlertType.ERROR, "Error", "Database Error",
@@ -56,22 +54,21 @@ public class VoucherController {
             return;
         }
 
-        // Close this window and open print preview for each voucher
+        // Close the create form
         Stage thisStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         thisStage.close();
 
-        for (String code : codes) {
-            FXMLLoader loader = new FXMLLoader(HelloApplication.class.getResource("voucher-print-view.fxml"));
-            Stage printStage = new Stage();
-            printStage.setScene(new Scene(loader.load()));
-            printStage.setTitle("Voucher Preview");
-            printStage.initModality(Modality.APPLICATION_MODAL);
+        // Open ONE scrollable batch print window
+        FXMLLoader loader = new FXMLLoader(HelloApplication.class.getResource("voucher-batch-print.fxml"));
+        Stage printStage = new Stage();
+        printStage.setScene(new Scene(loader.load()));
+        printStage.setTitle("Print Vouchers (" + codes.size() + ")");
+        printStage.initModality(Modality.APPLICATION_MODAL);
 
-            VoucherPrintController controller = loader.getController();
-            controller.setVoucherData(description, eventName, code);
+        VoucherBatchPrintController controller = loader.getController();
+        controller.setVouchers(description, eventName, List.copyOf(codes));
 
-            printStage.showAndWait();
-        }
+        printStage.show();
     }
 
     @FXML
@@ -83,12 +80,12 @@ public class VoucherController {
     private boolean validateFields() {
         if (descriptionField.getText().trim().isEmpty()) {
             showAlert(Alert.AlertType.ERROR, "Validation Error", "Missing Description",
-                    "Please enter a description (e.g. '1 Free Beer').");
+                    "Please enter a description (e.g. 1 Free Beer).");
             return false;
         }
         if (!allEventsCheckBox.isSelected() && eventComboBox.getValue() == null) {
             showAlert(Alert.AlertType.ERROR, "Validation Error", "Missing Event",
-                    "Please select an event or check 'Valid for all events'.");
+                    "Please select an event or check Valid for all events.");
             return false;
         }
         String qtyText = quantityField.getText().trim();

@@ -42,7 +42,7 @@ public class AddCoCoordinatorController {
         // Add all coordinators from UserManager (except primary coordinator and already added co-coordinators)
         for (User user : UserManager.getInstance().getUsers()) {
             // Only add Event Coordinators (not Admins)
-            if ("Event Coordinator".equals(user.getRole())) {
+            if ("coordinator".equals(user.getRole()) || "admin".equals(user.getRole())) {
                 String coordinatorName = user.getFullName();
                 // Don't add if it's the primary coordinator or already a co-coordinator
                 if (!coordinatorName.equals(event.getCoordinator()) &&

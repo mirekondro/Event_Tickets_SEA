@@ -6,8 +6,19 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.logging.LogManager;
 
 public class HelloApplication extends Application {
+    static {
+        try {
+            LogManager.getLogManager().readConfiguration(
+                HelloApplication.class.getResourceAsStream("/logging.properties")
+            );
+        } catch (Exception e) {
+            // Silently ignore if logging configuration cannot be loaded
+        }
+    }
+
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("login-view.fxml"));

@@ -3,6 +3,9 @@ module dk.easv.event_tickets_sea {
     requires javafx.fxml;
     requires java.sql;
     requires com.microsoft.sqlserver.jdbc;
+    requires java.mail;
+    requires com.google.zxing;
+    requires com.google.zxing.javase;
 
     opens dk.easv.event_tickets_sea to javafx.fxml;
     opens dk.easv.event_tickets_sea.gui to javafx.fxml;

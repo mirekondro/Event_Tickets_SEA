@@ -3,6 +3,7 @@ package dk.easv.event_tickets_sea.gui;
 import dk.easv.event_tickets_sea.HelloApplication;
 import dk.easv.event_tickets_sea.model.Event;
 import dk.easv.event_tickets_sea.util.EventManager;
+import dk.easv.event_tickets_sea.util.UserManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -75,8 +76,9 @@ public class CoordinatorController {
 
     @FXML
     private void handleSpecialVouchers() throws IOException {
-        openModal("voucher-print-view.fxml", "Special Voucher");
+        openModal("voucher-create.fxml", "Special Vouchers");
     }
+
 
     @FXML
     private void handleManageCategories() throws IOException {
@@ -142,9 +144,9 @@ public class CoordinatorController {
     }
 
     private void reloadEventsTable() {
-        eventsTable.setItems(EventManager.getInstance().getEvents());
-        eventsTable.refresh();
-    }
+            String username = UserManager.getInstance().getLoggedInUser().getUsername();
+            eventsTable.setItems(EventManager.getInstance().getEventsByCoordinator(username));
+        }
 
     @FXML
     private void handleViewAttendees() {

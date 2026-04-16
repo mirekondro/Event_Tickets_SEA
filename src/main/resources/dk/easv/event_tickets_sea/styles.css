@@ -75,6 +75,25 @@
     -fx-border-radius: 20px;
 }
 
+.ticket-quantity-spinner {
+    -fx-background-color: rgba(248,250,252,0.92);
+    -fx-border-color: #CBD5E1;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+}
+
+.ticket-quantity-spinner:focused {
+    -fx-border-color: #6366F1;
+    -fx-background-color: #FFFFFF;
+}
+
+.ticket-quantity-spinner .text-field {
+    -fx-background-color: transparent;
+    -fx-text-fill: #111827;
+    -fx-font-size: 14px;
+    -fx-alignment: CENTER;
+}
+
 /* BUTTONS */
 .btn {
     -fx-padding: 11px 18px;

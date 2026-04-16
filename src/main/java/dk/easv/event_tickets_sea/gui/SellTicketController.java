@@ -134,25 +134,14 @@ public class SellTicketController {
         stage.setTitle("Ticket Preview");
         stage.initModality(Modality.APPLICATION_MODAL);
 
-        Object controller = fxmlLoader.getController();
-        try {
-            Method setTicketDataMethod = controller.getClass().getMethod(
-                    "setTicketData", Event.class, String.class, String.class,
-                    String.class, int.class, String.class, String.class);
-            setTicketDataMethod.invoke(controller,
-                    this.event,
-                    customerNameField.getText().trim(),
-                    customerEmailField.getText().trim(),
-                    ticketCategoryComboBox.getValue() != null
-                            ? ticketCategoryComboBox.getValue().getCategoryName() : "Regular",
-                    quantitySpinner.getValue(),
-                    issuedBy,
-                    ticketId);
-        } catch (ReflectiveOperationException e) {
-            showAlert(Alert.AlertType.ERROR, "UI Error", "Ticket preview failed",
-                    "Could not pass ticket data to preview window.");
-            return;
-        }
+        TicketPrintController controller = fxmlLoader.getController();
+        controller.setTicketData(
+                this.event,
+                ticketCategoryComboBox.getValue(),
+                customerNameField.getText().trim(),
+                customerEmailField.getText().trim(),
+                quantitySpinner.getValue()
+        );
 
         stage.show();
     }

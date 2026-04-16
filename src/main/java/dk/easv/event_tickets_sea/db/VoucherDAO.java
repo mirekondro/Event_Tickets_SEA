@@ -39,7 +39,7 @@ public class VoucherDAO {
 
                 if (eventName != null && !eventName.isEmpty()) {
                     // Linked to a specific event
-                    query = "INSERT INTO Vouchers (VoucherCode, VoucherDescription, EventId, CreatedBy) " +
+                    query = "INSERT INTO dbo.Vouchers (VoucherCode, VoucherDescription, EventId, CreatedBy) " +
                             "SELECT ?, ?, e.EventId, u.UserId FROM Events e, Users u " +
                             "WHERE e.EventName = ? AND u.Username = ? AND e.IsActive = 1 AND u.IsActive = 1";
                     stmt = conn.prepareStatement(query);
@@ -49,7 +49,7 @@ public class VoucherDAO {
                     stmt.setString(4, createdByUsername);
                 } else {
                     // Valid for all events — EventId is NULL
-                    query = "INSERT INTO Vouchers (VoucherCode, VoucherDescription, EventId, CreatedBy) " +
+                    query = "INSERT INTO dbo.Vouchers (VoucherCode, VoucherDescription, EventId, CreatedBy) " +
                             "SELECT ?, ?, NULL, u.UserId FROM Users u " +
                             "WHERE u.Username = ? AND u.IsActive = 1";
                     stmt = conn.prepareStatement(query);
@@ -79,7 +79,7 @@ public class VoucherDAO {
         ObservableList<Voucher> vouchers = FXCollections.observableArrayList();
         String query = "SELECT v.VoucherId, v.VoucherCode, v.VoucherDescription, " +
                 "e.EventName, u.Username, v.IsRedeemed " +
-                "FROM Vouchers v " +
+                "FROM dbo.Vouchers v " +
                 "LEFT JOIN Events e ON v.EventId = e.EventId " +
                 "LEFT JOIN Users u ON v.CreatedBy = u.UserId " +
                 "WHERE v.IsActive = 1 " +

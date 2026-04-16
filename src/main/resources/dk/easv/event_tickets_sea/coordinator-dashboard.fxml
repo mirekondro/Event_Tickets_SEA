@@ -78,7 +78,7 @@
 
                 <Button fx:id="btnManageTickets" maxWidth="Infinity" mnemonicParsing="false" onAction="#handleManageTickets" styleClass="btn, btn-primary, btn-large" text="Sell / Print Tickets" />
 
-                <Button fx:id="btnViewAttendees" maxWidth="Infinity" mnemonicParsing="false" onAction="#handleViewAttendees" styleClass="btn, btn-outline" text="View Attendees" />
+
             </children>
         </VBox>
     </right>

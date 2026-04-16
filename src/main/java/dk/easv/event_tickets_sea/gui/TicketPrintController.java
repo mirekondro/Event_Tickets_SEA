@@ -2,11 +2,13 @@ package dk.easv.event_tickets_sea.gui;
 
 import dk.easv.event_tickets_sea.model.Category;
 import dk.easv.event_tickets_sea.model.Event;
+import dk.easv.event_tickets_sea.util.QRCodeGenerator;
 import dk.easv.event_tickets_sea.util.UserManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
 public class TicketPrintController {
@@ -23,29 +25,32 @@ public class TicketPrintController {
     @FXML private Label quantityLabel;
     @FXML private Label issuedByLabel;
     @FXML private Label ticketIdLabel;
+    @FXML private ImageView qrCodeImageView;
 
-    public void setTicketData(Event event, Category category, String customerName, String customerEmail, int quantity) {
+    public void setTicketData(Event event, Category category,
+                              String customerName, String customerEmail, int quantity) {
         String issuedBy = UserManager.getInstance().getLoggedInUser() != null
-                ? UserManager.getInstance().getLoggedInUser().getUsername()
-                : "-";
+                ? UserManager.getInstance().getLoggedInUser().getUsername() : "-";
+        String ticketId = "TKT-" + System.currentTimeMillis() + "-" + (int)(Math.random() * 10000);
 
         categoryLabel.setText(category != null ? category.getCategoryName().toUpperCase() : "-");
         eventNameLabel.setText(event != null ? event.getEventName() : "-");
         startLabel.setText(event != null ? event.getStartDateTimeFormatted() : "-");
         endLabel.setText(event != null ? event.getEndDateTimeFormatted() : "-");
         locationLabel.setText(event != null && event.getLocation() != null ? event.getLocation() : "-");
-        guidanceLabel.setText("Guidance: " + (event != null && event.getLocationGuidance() != null && !event.getLocationGuidance().isEmpty()
-                ? event.getLocationGuidance() : "-"));
+        guidanceLabel.setText("Guidance: " + (event != null && event.getLocationGuidance() != null
+                && !event.getLocationGuidance().isEmpty() ? event.getLocationGuidance() : "-"));
         notesLabel.setText(event != null && event.getNotes() != null ? event.getNotes() : "-");
         customerNameLabel.setText(customerName != null && !customerName.isEmpty() ? customerName : "Customer");
         customerEmailLabel.setText(customerEmail != null && !customerEmail.isEmpty() ? customerEmail : "-");
         quantityLabel.setText("Qty: " + quantity);
         issuedByLabel.setText("Issued by: " + issuedBy);
-        ticketIdLabel.setText("ID: " + generateTicketId());
-    }
+        ticketIdLabel.setText("ID: " + ticketId);
 
-    private String generateTicketId() {
-        return "TKT-" + System.currentTimeMillis() + "-" + (int)(Math.random() * 10000);
+        // Generate QR code from ticket ID
+        if (qrCodeImageView != null) {
+            qrCodeImageView.setImage(QRCodeGenerator.generateQRCode(ticketId, 120));
+        }
     }
 
     @FXML

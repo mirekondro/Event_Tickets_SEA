@@ -76,8 +76,9 @@ public class CoordinatorController {
 
     @FXML
     private void handleSpecialVouchers() throws IOException {
-        openModal("voucher-print-view.fxml", "Special Voucher");
+        openModal("voucher-create.fxml", "Special Vouchers");
     }
+
 
     @FXML
     private void handleManageCategories() throws IOException {
